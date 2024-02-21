@@ -1,0 +1,235 @@
+<html>
+<head>
+<title>ProfileEditActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ProfileEditActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.networkingapp</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResult</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResultCallback</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResultLauncher</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.contract.ActivityResultContracts</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.Activity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.DialogInterface</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.net.Uri</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.Manifest</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnFailureListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnSuccessListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.Task</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.button.MaterialButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.textfield.TextInputEditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.Query</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.FirebaseStorage</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.StorageReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.UploadTask</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.squareup.picasso.Picasso</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.Objects</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">ProfileEditActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+    <span class="s1">FirebaseUser user</span><span class="s0">;</span>
+    <span class="s1">FirebaseDatabase database</span><span class="s0">;</span>
+    <span class="s1">DatabaseReference reference</span><span class="s0">;</span>
+    <span class="s1">StorageReference storageReference</span><span class="s0">;</span>
+    <span class="s1">String imageURL</span><span class="s0">;</span>
+    <span class="s1">ImageButton closeBtn</span><span class="s0">, </span><span class="s1">saveBtn</span><span class="s0">;</span>
+    <span class="s1">TextInputEditText editTextName</span><span class="s0">, </span><span class="s1">editTextDesc</span><span class="s0">, </span><span class="s1">linksNbrTI</span><span class="s0">, </span><span class="s1">linksNbrAdtnlTI</span><span class="s0">, </span><span class="s1">linksWebsiteTI</span><span class="s0">, </span><span class="s1">linksEmailTI</span><span class="s0">;</span>
+    <span class="s1">MaterialButton btnEditUserPic</span><span class="s0">;</span>
+    <span class="s1">ImageView userPicIv</span><span class="s0">;</span>
+    <span class="s1">Uri uri</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_profile_edit)</span><span class="s0">;</span>
+
+        <span class="s1">closeBtn = findViewById(R.id.btnCloseProfileEdit)</span><span class="s0">;</span>
+        <span class="s1">saveBtn = findViewById(R.id.btnSaveProfileEdit)</span><span class="s0">;</span>
+        <span class="s1">editTextName = findViewById(R.id.editTextName)</span><span class="s0">;</span>
+        <span class="s1">editTextDesc = findViewById(R.id.editTextDesc)</span><span class="s0">;</span>
+        <span class="s1">linksNbrTI = findViewById(R.id.linksNbrTI)</span><span class="s0">;</span>
+        <span class="s1">linksNbrAdtnlTI = findViewById(R.id.linksNbrAdtnlTI)</span><span class="s0">;</span>
+        <span class="s1">linksWebsiteTI = findViewById(R.id.linksWebsiteTI)</span><span class="s0">;</span>
+        <span class="s1">linksEmailTI = findViewById(R.id.linksEmailTI)</span><span class="s0">;</span>
+        <span class="s1">btnEditUserPic = findViewById(R.id.btnEditUserPic)</span><span class="s0">;</span>
+        <span class="s1">userPicIv = findViewById(R.id.userPicIv)</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">user = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+        <span class="s1">reference = database.getReference(</span><span class="s2">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">Query query = reference.orderByChild(</span><span class="s2">&quot;id&quot;</span><span class="s1">).equalTo(user.getUid())</span><span class="s0">;</span>
+        <span class="s1">query.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@SuppressLint(</span><span class="s2">&quot;SetTextI18n&quot;</span><span class="s1">)</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+                <span class="s0">for </span><span class="s1">(DataSnapshot ds : snapshot.getChildren()) {</span>
+                    <span class="s1">editTextName.setText(</span><span class="s2">&quot;&quot; </span><span class="s1">+ ds.child(</span><span class="s2">&quot;name&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+                    <span class="s1">editTextDesc.setText(</span><span class="s2">&quot;&quot; </span><span class="s1">+ ds.child(</span><span class="s2">&quot;description&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+                    <span class="s1">String imageURL = </span><span class="s2">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s2">&quot;image&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">linksNbrTI.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s2">&quot;number&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+                    <span class="s1">linksNbrAdtnlTI.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s2">&quot;additionalNumber&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+                    <span class="s1">linksWebsiteTI.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s2">&quot;websiteLink&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+                    <span class="s1">linksEmailTI.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s2">&quot;contactEmail&quot;</span><span class="s1">).getValue())</span><span class="s0">;</span>
+
+                    <span class="s0">try </span><span class="s1">{</span>
+                        <span class="s1">Picasso.get().load(imageURL).into(userPicIv)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                    <span class="s0">catch </span><span class="s1">(Exception e){</span>
+                        <span class="s1">Picasso.get().load(R.drawable.user_picture_default).into(userPicIv)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+                <span class="s1">Toast.makeText(ProfileEditActivity.</span><span class="s0">this, </span><span class="s2">&quot;Ошибка загрузки данных&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">ActivityResultLauncher&lt;Intent&gt; activityResultLauncher = registerForActivityResult(</span>
+                <span class="s0">new </span><span class="s1">ActivityResultContracts.StartActivityForResult()</span><span class="s0">,</span>
+                <span class="s0">new </span><span class="s1">ActivityResultCallback&lt;ActivityResult&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onActivityResult(ActivityResult result) {</span>
+                        <span class="s0">if </span><span class="s1">(result.getResultCode() == Activity.RESULT_OK) {</span>
+                            <span class="s1">Intent data = result.getData()</span><span class="s0">;</span>
+                            <span class="s1">uri = data.getData()</span><span class="s0">;</span>
+                            <span class="s1">userPicIv.setImageURI(uri)</span><span class="s0">;</span>
+                        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                            <span class="s1">Toast.makeText(ProfileEditActivity.</span><span class="s0">this, </span><span class="s2">&quot;Не выбрано изображение&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+        <span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">btnEditUserPic.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+
+                <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(ProfileEditActivity.</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">builder.setMessage(R.string.changePicDialog)</span>
+                            <span class="s1">.setPositiveButton(R.string.gotItRu</span><span class="s0">, new </span><span class="s1">DialogInterface.OnClickListener() {</span>
+                                <span class="s0">public void </span><span class="s1">onClick(DialogInterface dialog</span><span class="s0">, int </span><span class="s1">id) {</span>
+                                    <span class="s1">Intent photoPicker = </span><span class="s0">new </span><span class="s1">Intent(Intent.ACTION_PICK)</span><span class="s0">;</span>
+                                    <span class="s1">photoPicker.setType(</span><span class="s2">&quot;image/*&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                    <span class="s1">activityResultLauncher.launch(photoPicker)</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">})</span><span class="s0">;</span>
+                <span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+                <span class="s1">dialog.show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">saveBtn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+
+                <span class="s1">saveData()</span><span class="s0">;</span>
+
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">, </span><span class="s1">DashboardActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                <span class="s1">finish()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">closeBtn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(ProfileEditActivity.</span><span class="s0">this, </span><span class="s1">DashboardActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                <span class="s1">finish()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">saveData() {</span>
+        <span class="s1">storageReference = FirebaseStorage.getInstance().getReference().child(</span><span class="s2">&quot;Android Images&quot;</span><span class="s1">)</span>
+                <span class="s1">.child(uri.getLastPathSegment())</span><span class="s0">;</span>
+
+        <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(ProfileEditActivity.</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setCancelable(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setView(R.layout.saving_layout)</span><span class="s0">;</span>
+        <span class="s1">AlertDialog dialogSave = builder.create()</span><span class="s0">;</span>
+        <span class="s1">dialogSave.show()</span><span class="s0">;</span>
+
+        <span class="s1">storageReference.putFile(uri).addOnSuccessListener(</span><span class="s0">new </span><span class="s1">OnSuccessListener&lt;UploadTask.TaskSnapshot&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onSuccess(UploadTask.TaskSnapshot taskSnapshot) {</span>
+
+                <span class="s1">Task&lt;Uri&gt; uriTask = taskSnapshot.getStorage().getDownloadUrl()</span><span class="s0">;</span>
+                <span class="s0">while </span><span class="s1">(!uriTask.isComplete()) </span><span class="s0">;</span>
+                <span class="s1">Uri urlImage = uriTask.getResult()</span><span class="s0">;</span>
+                <span class="s1">imageURL = urlImage.toString()</span><span class="s0">;</span>
+                <span class="s1">uploadData()</span><span class="s0">;</span>
+                <span class="s1">dialogSave.dismiss()</span><span class="s0">;</span>
+
+            <span class="s1">}</span>
+        <span class="s1">}).addOnFailureListener(</span><span class="s0">new </span><span class="s1">OnFailureListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onFailure(@NonNull Exception e) {</span>
+                <span class="s1">Toast.makeText(ProfileEditActivity.</span><span class="s0">this, </span><span class="s2">&quot;Не удалось сохранить данные&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">dialogSave.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">uploadData() {</span>
+
+        <span class="s1">String name = Objects.requireNonNull(editTextName.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">String desc = Objects.requireNonNull(editTextDesc.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">String number = Objects.requireNonNull(linksNbrTI.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">String addNumber = Objects.requireNonNull(linksNbrAdtnlTI.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">String website = Objects.requireNonNull(linksWebsiteTI.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">String email = Objects.requireNonNull(linksEmailTI.getText()).toString().trim()</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">user = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+        <span class="s1">reference = database.getReference(</span><span class="s2">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;name&quot;</span><span class="s1">).setValue(name)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;description&quot;</span><span class="s1">).setValue(desc)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;image&quot;</span><span class="s1">).setValue(imageURL)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;number&quot;</span><span class="s1">).setValue(number)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;additionalNumber&quot;</span><span class="s1">).setValue(addNumber)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;websiteLink&quot;</span><span class="s1">).setValue(website)</span><span class="s0">;</span>
+        <span class="s1">reference.child(user.getUid()).child(</span><span class="s2">&quot;contactEmail&quot;</span><span class="s1">).setValue(email)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<html>
+<head>
+<title>UploadPostActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+UploadPostActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.networkingapp</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResult</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResultCallback</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.ActivityResultLauncher</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.activity.result.contract.ActivityResultContracts</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.app.Activity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.net.Uri</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnCompleteListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnFailureListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnSuccessListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.Task</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.FirebaseStorage</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.StorageReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.storage.UploadTask</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">UploadPostActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s1">ImageView uploadPostImage</span><span class="s0">;</span>
+    <span class="s1">EditText uploadPostText</span><span class="s0">;</span>
+    <span class="s1">ImageButton uploadPostCloseBtn</span><span class="s0">, </span><span class="s1">uploadPostSaveBtn</span><span class="s0">;</span>
+    <span class="s1">String imageURL</span><span class="s0">;</span>
+    <span class="s1">Uri uri</span><span class="s0">;</span>
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+    <span class="s1">FirebaseUser user</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_upload_post)</span><span class="s0">;</span>
+
+        <span class="s1">uploadPostImage = findViewById(R.id.uploadPostImage)</span><span class="s0">;</span>
+        <span class="s1">uploadPostText = findViewById(R.id.uploadPostText)</span><span class="s0">;</span>
+        <span class="s1">uploadPostCloseBtn = findViewById(R.id.uploadPostCloseBtn)</span><span class="s0">;</span>
+        <span class="s1">uploadPostSaveBtn = findViewById(R.id.uploadPostSaveBtn)</span><span class="s0">;</span>
+
+        <span class="s1">ActivityResultLauncher&lt;Intent&gt; activityResultLauncher = registerForActivityResult(</span>
+                <span class="s0">new </span><span class="s1">ActivityResultContracts.StartActivityForResult()</span><span class="s0">,</span>
+                <span class="s0">new </span><span class="s1">ActivityResultCallback&lt;ActivityResult&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onActivityResult(ActivityResult result) {</span>
+                        <span class="s0">if</span><span class="s1">(result.getResultCode()== Activity.RESULT_OK){</span>
+                            <span class="s1">Intent data = result.getData()</span><span class="s0">;</span>
+                            <span class="s1">uri = data.getData()</span><span class="s0">;</span>
+                            <span class="s1">uploadPostImage.setImageURI(uri)</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                        <span class="s0">else</span><span class="s1">{</span>
+                            <span class="s1">Toast.makeText(UploadPostActivity.</span><span class="s0">this, </span><span class="s2">&quot;Не выбрано изображение&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+        <span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">uploadPostImage.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent photoPicker = </span><span class="s0">new </span><span class="s1">Intent(Intent.ACTION_PICK)</span><span class="s0">;</span>
+                <span class="s1">photoPicker.setType(</span><span class="s2">&quot;image/*&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">activityResultLauncher.launch(photoPicker)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">uploadPostSaveBtn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">saveData()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">uploadPostCloseBtn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">, </span><span class="s1">DashboardActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                <span class="s1">finish()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">saveData(){</span>
+
+        <span class="s1">StorageReference storageReference = FirebaseStorage.getInstance().getReference().child(</span><span class="s2">&quot;Post Images&quot;</span><span class="s1">)</span>
+                <span class="s1">.child(uri.getLastPathSegment())</span><span class="s0">;</span>
+
+        <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(UploadPostActivity.</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setCancelable(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setView(R.layout.saving_layout)</span><span class="s0">;</span>
+        <span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+
+        <span class="s1">storageReference.putFile(uri).addOnSuccessListener(</span><span class="s0">new </span><span class="s1">OnSuccessListener&lt;UploadTask.TaskSnapshot&gt;() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onSuccess(UploadTask.TaskSnapshot taskSnapshot) {</span>
+
+                <span class="s1">Task&lt;Uri&gt; uriTask = taskSnapshot.getStorage().getDownloadUrl()</span><span class="s0">;</span>
+                <span class="s0">while </span><span class="s1">(!uriTask.isComplete())</span><span class="s0">;</span>
+                <span class="s1">Uri urlImage = uriTask.getResult()</span><span class="s0">;</span>
+                <span class="s1">imageURL = urlImage.toString()</span><span class="s0">;</span>
+                <span class="s1">uploadData()</span><span class="s0">;</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}).addOnFailureListener(</span><span class="s0">new </span><span class="s1">OnFailureListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onFailure(@NonNull Exception e) {</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">uploadData(){</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">user = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">FirebaseDatabase database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+
+        <span class="s1">String key = database.getReference(</span><span class="s2">&quot;Posts&quot;</span><span class="s1">).push().getKey()</span><span class="s0">;</span>
+        <span class="s1">String text = uploadPostText.getText().toString()</span><span class="s0">;</span>
+        <span class="s1">String uid = user.getUid()</span><span class="s0">;</span>
+        <span class="s1">PostsClass postsClass = </span><span class="s0">new </span><span class="s1">PostsClass(text</span><span class="s0">, </span><span class="s1">imageURL</span><span class="s0">, </span><span class="s1">uid)</span><span class="s0">;</span>
+
+        <span class="s1">FirebaseDatabase.getInstance().getReference(</span><span class="s2">&quot;Posts&quot;</span><span class="s1">).child(key)</span>
+                <span class="s1">.setValue(postsClass).addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;Void&gt;() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;Void&gt; task) {</span>
+                        <span class="s0">if</span><span class="s1">(task.isSuccessful()){</span>
+                            <span class="s1">Toast.makeText(UploadPostActivity.</span><span class="s0">this, </span><span class="s2">&quot;Сохранено&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+                    <span class="s1">}</span>
+                <span class="s1">}).addOnFailureListener(</span><span class="s0">new </span><span class="s1">OnFailureListener() {</span>
+                    <span class="s1">@Override</span>
+                    <span class="s0">public void </span><span class="s1">onFailure(@NonNull Exception e) {</span>
+                        <span class="s1">Toast.makeText(UploadPostActivity.</span><span class="s0">this, </span><span class="s1">e.getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">})</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

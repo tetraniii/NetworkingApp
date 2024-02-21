@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>DashboardActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+DashboardActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.networkingapp</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.FragmentManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.FragmentTransaction</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.MenuItem</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.example.networkingapp.fragments.HomeFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.fragments.ProfileFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.fragments.SettingsFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.bottomnavigation.BottomNavigationView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.navigation.NavigationBarView</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">DashboardActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_dashboard)</span><span class="s0">;</span>
+
+        <span class="s1">BottomNavigationView bottomNav = findViewById(R.id.navigation)</span><span class="s0">;</span>
+        <span class="s1">bottomNav.setOnItemSelectedListener(navListener)</span><span class="s0">;</span>
+
+        <span class="s0">if</span><span class="s1">(savedInstanceState==</span><span class="s0">null</span><span class="s1">){</span>
+            <span class="s1">bottomNav.setSelectedItemId(R.id.nav_home)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s0">private final </span><span class="s1">NavigationBarView.OnItemSelectedListener navListener =</span>
+            <span class="s0">new </span><span class="s1">NavigationBarView.OnItemSelectedListener() {</span>
+                <span class="s1">@Override</span>
+                <span class="s0">public boolean </span><span class="s1">onNavigationItemSelected(@NonNull MenuItem item) {</span>
+
+                    <span class="s0">int </span><span class="s1">itemId = item.getItemId()</span><span class="s0">;</span>
+                    <span class="s0">if </span><span class="s1">(itemId == R.id.nav_home) {</span>
+                            <span class="s1">HomeFragment fragment1 = </span><span class="s0">new </span><span class="s1">HomeFragment()</span><span class="s0">;</span>
+                            <span class="s1">FragmentManager fragmentManager = getSupportFragmentManager()</span><span class="s0">;</span>
+                            <span class="s1">FragmentTransaction ft1 = fragmentManager.beginTransaction()</span><span class="s0">;</span>
+                            <span class="s1">ft1.replace(R.id.content</span><span class="s0">, </span><span class="s1">fragment1</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">ft1.commit()</span><span class="s0">;</span>
+                            <span class="s0">return true;</span>
+                    <span class="s1">} </span><span class="s0">else if </span><span class="s1">(itemId == R.id.nav_profile) {</span>
+                            <span class="s1">ProfileFragment fragment2 = </span><span class="s0">new </span><span class="s1">ProfileFragment()</span><span class="s0">;</span>
+                            <span class="s1">FragmentManager fragmentManager = getSupportFragmentManager()</span><span class="s0">;</span>
+                            <span class="s1">FragmentTransaction ft2 = fragmentManager.beginTransaction()</span><span class="s0">;</span>
+                            <span class="s1">ft2.replace(R.id.content</span><span class="s0">, </span><span class="s1">fragment2</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">ft2.commit()</span><span class="s0">;</span>
+                            <span class="s0">return true;</span>
+                    <span class="s1">} </span><span class="s0">else if </span><span class="s1">(itemId == R.id.nav_users) {</span>
+                            <span class="s1">SettingsFragment fragment3 = </span><span class="s0">new </span><span class="s1">SettingsFragment()</span><span class="s0">;</span>
+                            <span class="s1">FragmentManager fragmentManager = getSupportFragmentManager()</span><span class="s0">;</span>
+                            <span class="s1">FragmentTransaction ft3 = fragmentManager.beginTransaction()</span><span class="s0">;</span>
+                            <span class="s1">ft3.replace(R.id.content</span><span class="s0">, </span><span class="s1">fragment3</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                            <span class="s1">ft3.commit()</span><span class="s0">;</span>
+                            <span class="s0">return true;</span>
+                    <span class="s1">}</span>
+                    <span class="s0">return false;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span><span class="s0">;</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

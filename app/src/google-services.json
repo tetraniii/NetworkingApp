@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "654074003039",
+    "firebase_url": "https://networkingapp-7f3ab-default-rtdb.firebaseio.com",
+    "project_id": "networkingapp-7f3ab",
+    "storage_bucket": "networkingapp-7f3ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654074003039:android:f695f9fbd4bceff4e0e5ea",
+        "android_client_info": {
+          "package_name": "com.example.networkingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBht4ILXcyCfqCW4fMtXgGKLxDmVuTz16s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

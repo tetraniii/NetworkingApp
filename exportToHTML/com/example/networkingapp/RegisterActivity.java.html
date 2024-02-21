@@ -1,0 +1,187 @@
+<html>
+<head>
+<title>RegisterActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RegisterActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.networkingapp</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.widget.SwitchCompat</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.text.TextUtils</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.OnCompleteListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.gms.tasks.Task</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.textfield.TextInputEditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.AuthResult</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.HashMap</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">RegisterActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s1">TextInputEditText editTextEmail</span><span class="s0">, </span><span class="s1">editTextPassword</span><span class="s0">, </span><span class="s1">editTextPasswordRep</span><span class="s0">;</span>
+    <span class="s1">SwitchCompat typeOfUserSwitch</span><span class="s0">;</span>
+    <span class="s1">Button buttonReg</span><span class="s0">;</span>
+    <span class="s1">FirebaseAuth mAuth</span><span class="s0">;</span>
+    <span class="s1">TextView textView</span><span class="s0">;</span>
+    <span class="s1">FirebaseDatabase database</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onStart() {</span>
+        <span class="s0">super</span><span class="s1">.onStart()</span><span class="s0">;</span>
+        <span class="s1">FirebaseUser currentUser = mAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s0">if</span><span class="s1">(currentUser != </span><span class="s0">null</span><span class="s1">){</span>
+            <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">, </span><span class="s1">DashboardActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">finish()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_register)</span><span class="s0">;</span>
+
+        <span class="s1">mAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">editTextEmail = findViewById(R.id.email)</span><span class="s0">;</span>
+        <span class="s1">editTextPassword = findViewById(R.id.password)</span><span class="s0">;</span>
+        <span class="s1">editTextPasswordRep = findViewById(R.id.repeatPassword)</span><span class="s0">;</span>
+        <span class="s1">typeOfUserSwitch = findViewById(R.id.typeOfUser)</span><span class="s0">;</span>
+        <span class="s1">buttonReg = findViewById(R.id.btn_Register)</span><span class="s0">;</span>
+        <span class="s1">textView = findViewById(R.id.loginNow)</span><span class="s0">;</span>
+
+        <span class="s1">textView.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">, </span><span class="s1">LoginActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                <span class="s1">finish()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">buttonReg.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">mAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+                <span class="s1">database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+                <span class="s1">String email</span><span class="s0">, </span><span class="s1">password</span><span class="s0">, </span><span class="s1">repeatPassword</span><span class="s0">;</span>
+                <span class="s1">email = String.valueOf(editTextEmail.getText())</span><span class="s0">;</span>
+                <span class="s1">password = String.valueOf(editTextPassword.getText())</span><span class="s0">;</span>
+                <span class="s1">repeatPassword = String.valueOf(editTextPasswordRep.getText())</span><span class="s0">;</span>
+                <span class="s0">boolean </span><span class="s1">userIsStartup</span><span class="s0">;</span>
+                <span class="s1">userIsStartup = typeOfUserSwitch.isChecked()</span><span class="s0">;</span>
+
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(email)){</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Введите email&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(password)){</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Введите пароль&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(password.length() &gt; </span><span class="s3">15 </span><span class="s1">|| password.length() &lt; </span><span class="s3">8</span><span class="s1">)</span>
+                <span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароль должен содержать от 8 до 20 символов&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s1">String upperCaseChars = </span><span class="s2">&quot;(.*[A-Z].*)&quot;</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(!password.matches(upperCaseChars ))</span>
+                <span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароль должен содержать как минимум одну букву верхнего регистра&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s1">String lowerCaseChars = </span><span class="s2">&quot;(.*[a-z].*)&quot;</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(!password.matches(lowerCaseChars ))</span>
+                <span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароль должен содержать как минимум одну букву нижнего регистра&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s1">String numbers = </span><span class="s2">&quot;(.*[0-9].*)&quot;</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(!password.matches(numbers ))</span>
+                <span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароль должен содержать как минимум одну цифру&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s1">String specialChars = </span><span class="s2">&quot;(.*[@,#,$,%].*$)&quot;</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(!password.matches(specialChars ))</span>
+                <span class="s1">{</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароль должен содержать как минимум один из данных символов: @ # $ %&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s0">if</span><span class="s1">(TextUtils.isEmpty(repeatPassword)){</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Повторите пароль&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+                <span class="s0">if</span><span class="s1">(!repeatPassword.equals(password)){</span>
+                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this,</span><span class="s2">&quot;Пароли не совпадают&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                    <span class="s0">return;</span>
+                <span class="s1">}</span>
+
+
+                <span class="s1">mAuth.createUserWithEmailAndPassword(email</span><span class="s0">, </span><span class="s1">password)</span>
+                        <span class="s1">.addOnCompleteListener(</span><span class="s0">new </span><span class="s1">OnCompleteListener&lt;AuthResult&gt;() {</span>
+                            <span class="s1">@Override</span>
+                            <span class="s0">public void </span><span class="s1">onComplete(@NonNull Task&lt;AuthResult&gt; task) {</span>
+                                <span class="s0">if </span><span class="s1">(task.isSuccessful()) {</span>
+
+                                    <span class="s1">FirebaseUser currentUser = mAuth.getCurrentUser()</span><span class="s0">;</span>
+
+                                   <span class="s1">HashMap&lt;String</span><span class="s0">, </span><span class="s1">Object&gt; map = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;id&quot;</span><span class="s0">, </span><span class="s1">currentUser.getUid())</span><span class="s0">;</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;email&quot;</span><span class="s0">, </span><span class="s1">email)</span><span class="s0">;</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;name&quot;</span><span class="s0">,</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;description&quot;</span><span class="s0">,</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;image&quot;</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">; </span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;userIsStartup&quot;</span><span class="s0">, </span><span class="s1">userIsStartup)</span><span class="s0">;</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;number&quot;</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;additionalNumber&quot;</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;websiteLink&quot;</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span><span class="s4">//will be added later</span>
+                                    <span class="s1">map.put(</span><span class="s2">&quot;contactEmail&quot;</span><span class="s0">, </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span><span class="s4">//will be added later</span>
+
+                                    <span class="s1">DatabaseReference reference = database.getReference(</span><span class="s2">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                                    <span class="s1">reference.child(currentUser.getUid()).setValue(map)</span><span class="s0">;</span>
+
+
+                                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Аккаунт успешно создан&quot;</span><span class="s0">,</span>
+                                            <span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                    <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">, </span><span class="s1">LoginActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                                    <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+                                    <span class="s1">finish()</span><span class="s0">;</span>
+                                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                                    <span class="s1">Toast.makeText(RegisterActivity.</span><span class="s0">this, </span><span class="s2">&quot;Введите действительный email или аккаунт с таким email уже существует&quot;</span><span class="s0">,</span>
+                                            <span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                                <span class="s1">}</span>
+                            <span class="s1">}</span>
+                        <span class="s1">})</span><span class="s0">;</span>
+
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ProfileEditActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        ><!--app:cardCornerRadius="20dp"-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center">
+
+                            <ImageButton
+                                android:id="@+id/btnCloseProfileEdit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#00FFFFFF"
+                                android:src="@drawable/ic_button_close" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/editingRu"
+                                android:textSize="25sp"
+                                android:layout_marginStart="10dp"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/btnSaveProfileEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#00FFFFFF"
+                        android:src="@drawable/ic_button_done"
+                        android:paddingRight="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:background="@color/lightPurple">
+
+                            <ImageView
+                                android:id="@+id/userPicIv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="fitXY"/>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnEditUserPic"
+                                android:theme="@style/MaterialButton"
+                                app:icon="@drawable/ic_edit_profile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/changePicRu"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="10dp"
+                                app:iconSize="25dp"/>
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="20dp">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/changeProjectNameRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/descHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDesc"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                        <!--
+                        <TextView
+                            android:id="@+id/descriptionTv"
+                            android:text="Описание"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"/>
+
+                        <LinearLayout
+                            android:id="@+id/btnLinks"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:layout_marginTop="10dp">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#00FFFFFF"
+                                android:src="@drawable/ic_button_links" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/linksRu"
+                                android:layout_marginStart="5dp"
+                                android:textSize="20sp"/>
+
+                        </LinearLayout>
+-->
+                    </LinearLayout>
+<!--
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_margin="20dp"
+                        android:layout_marginBottom="40dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/contactsRu"/>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/numberHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/linksNbrTI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/numberAdtnHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/linksNbrAdtnlTI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/websiteHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/linksWebsiteTI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/emailHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/linksEmailTI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnAddContact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:theme="@style/MaterialButton"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:text="@string/addContactRu"
+                            app:icon="@drawable/ic_add"
+                            app:iconSize="25dp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>

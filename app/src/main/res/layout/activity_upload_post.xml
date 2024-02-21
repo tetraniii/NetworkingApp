@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UploadPostActivity"
+    android:layout_gravity="center_horizontal"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+<!--    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="20dp"> -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/uploadPostCloseBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:src="@drawable/ic_button_close"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newPostRu"
+                    android:layout_marginStart="10dp"
+                    android:textSize="25sp"
+                    android:layout_toEndOf="@+id/uploadPostCloseBtn"/>
+
+                <ImageButton
+                    android:id="@+id/uploadPostSaveBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:src="@drawable/ic_button_done"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/ic_upload_image"
+                android:id="@+id/uploadPostImage"
+                android:layout_marginTop="10dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/uploadPostText"
+                android:hint="@string/postHintRu"
+                android:gravity="start"
+                android:backgroundTint="#00FFFFFF"
+                android:layout_marginTop="20dp"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:layout_weight="1"/>
+
+<!--    </androidx.cardview.widget.CardView> -->
+
+</LinearLayout>

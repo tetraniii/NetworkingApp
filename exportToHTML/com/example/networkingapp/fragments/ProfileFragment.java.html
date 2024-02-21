@@ -1,0 +1,315 @@
+<html>
+<head>
+<title>ProfileFragment.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+ProfileFragment.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.networkingapp.fragments</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.AlertDialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.app.Dialog</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.ClipData</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.ClipboardManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Context</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.Color</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.drawable.ColorDrawable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.NonNull</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.Fragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.GridLayoutManager</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.recyclerview.widget.RecyclerView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.view.Gravity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.LayoutInflater</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.ViewGroup</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.Window</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.example.networkingapp.MyAdapter</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.PostsClass</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.ProfileEditActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.R</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.example.networkingapp.UploadPostActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.android.material.button.MaterialButton</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DataSnapshot</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseError</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.Query</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.ValueEventListener</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.squareup.picasso.Picasso</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.List</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Objects</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">ProfileFragment </span><span class="s0">extends </span><span class="s1">Fragment {</span>
+
+    <span class="s1">FirebaseAuth firebaseAuth</span><span class="s0">;</span>
+    <span class="s1">FirebaseUser user</span><span class="s0">;</span>
+    <span class="s1">FirebaseDatabase database</span><span class="s0">;</span>
+    <span class="s1">DatabaseReference reference</span><span class="s0">;</span>
+
+    <span class="s1">ImageView userPicIv</span><span class="s0">;</span>
+    <span class="s1">TextView nameTv</span><span class="s0">, </span><span class="s1">descriptionTv</span><span class="s0">;</span>
+    <span class="s1">MaterialButton editProfileButton</span><span class="s0">, </span><span class="s1">linksButton</span><span class="s0">;</span>
+    <span class="s1">String phone</span><span class="s0">, </span><span class="s1">phoneAdd</span><span class="s0">, </span><span class="s1">website</span><span class="s0">, </span><span class="s1">email</span><span class="s0">;</span>
+    <span class="s1">Button newPostBtn</span><span class="s0">;</span>
+    <span class="s1">RecyclerView recyclerView</span><span class="s0">;</span>
+    <span class="s1">List&lt;PostsClass&gt; postsList</span><span class="s0">;</span>
+    <span class="s1">ValueEventListener eventListener</span><span class="s0">;</span>
+
+    <span class="s0">public </span><span class="s1">ProfileFragment() {</span>
+        <span class="s2">// Required empty public constructor</span>
+    <span class="s1">}</span>
+    <span class="s1">@Override</span>
+    <span class="s0">public </span><span class="s1">View onCreateView(LayoutInflater inflater</span><span class="s0">, </span><span class="s1">ViewGroup container</span><span class="s0">,</span>
+                             <span class="s1">Bundle savedInstanceState) {</span>
+
+        <span class="s1">View view = inflater.inflate(R.layout.fragment_profile</span><span class="s0">, </span><span class="s1">container</span><span class="s0">, false</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">user = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+        <span class="s1">reference = database.getReference(</span><span class="s3">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">userPicIv = view.findViewById(R.id.userPicIv)</span><span class="s0">;</span>
+        <span class="s1">nameTv = view.findViewById(R.id.nameTv)</span><span class="s0">;</span>
+        <span class="s1">descriptionTv = view.findViewById(R.id.descriptionTv)</span><span class="s0">;</span>
+        <span class="s1">linksButton = (MaterialButton) view.findViewById(R.id.btnLinks)</span><span class="s0">;</span>
+        <span class="s1">editProfileButton = (MaterialButton) view.findViewById(R.id.fab)</span><span class="s0">;</span>
+        <span class="s1">newPostBtn = (Button) view.findViewById(R.id.newPostBtn)</span><span class="s0">;</span>
+        <span class="s1">recyclerView = (RecyclerView)  view.findViewById(R.id.postsRV)</span><span class="s0">;</span>
+
+        <span class="s1">Query query = reference.orderByChild(</span><span class="s3">&quot;id&quot;</span><span class="s1">).equalTo(user.getUid())</span><span class="s0">;</span>
+        <span class="s1">query.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+                <span class="s0">for</span><span class="s1">(DataSnapshot ds: snapshot.getChildren()){</span>
+                    <span class="s1">String name = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;name&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">String description = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;description&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">String imageURL = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;image&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(name.isEmpty())</span>
+                        <span class="s1">nameTv.setText(</span><span class="s3">&quot;Название вашего проекта&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">nameTv.setText(name)</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(description.isEmpty())</span>
+                        <span class="s1">descriptionTv.setText(</span><span class="s3">&quot;Описание вашего проекта&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">descriptionTv.setText(description)</span><span class="s0">;</span>
+
+                    <span class="s0">try </span><span class="s1">{</span>
+                        <span class="s1">Picasso.get().load(imageURL).into(userPicIv)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                    <span class="s0">catch </span><span class="s1">(Exception e){</span>
+                        <span class="s1">Picasso.get().load(R.drawable.user_picture_default).into(userPicIv)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Ошибка загрузки данных&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">GridLayoutManager gridLayoutManager = </span><span class="s0">new </span><span class="s1">GridLayoutManager(getActivity()</span><span class="s0">, </span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setLayoutManager(gridLayoutManager)</span><span class="s0">;</span>
+
+        <span class="s1">AlertDialog.Builder builder = </span><span class="s0">new </span><span class="s1">AlertDialog.Builder(getActivity())</span><span class="s0">;</span>
+        <span class="s1">builder.setCancelable(</span><span class="s0">false</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">builder.setView(R.layout.loading_layout)</span><span class="s0">;</span>
+        <span class="s1">AlertDialog dialog = builder.create()</span><span class="s0">;</span>
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+
+        <span class="s1">postsList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+
+        <span class="s1">MyAdapter adapter = </span><span class="s0">new </span><span class="s1">MyAdapter(getActivity()</span><span class="s0">, </span><span class="s1">postsList)</span><span class="s0">;</span>
+        <span class="s1">recyclerView.setAdapter(adapter)</span><span class="s0">;</span>
+
+        <span class="s1">reference = FirebaseDatabase.getInstance().getReference(</span><span class="s3">&quot;Posts&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+
+        <span class="s1">eventListener = reference.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+                <span class="s1">postsList.clear()</span><span class="s0">;</span>
+                <span class="s0">for</span><span class="s1">(DataSnapshot itemSnapshot: snapshot.getChildren()){</span>
+                    <span class="s1">PostsClass postsClass = itemSnapshot.getValue(PostsClass.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">if</span><span class="s1">(Objects.equals(postsClass.getAuthorID()</span><span class="s0">, </span><span class="s1">user.getUid())){</span>
+                        <span class="s1">postsList.add(postsClass)</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+                <span class="s1">adapter.notifyDataSetChanged()</span><span class="s0">;</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+
+
+
+        <span class="s1">editProfileButton.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getActivity()</span><span class="s0">, </span><span class="s1">ProfileEditActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">linksButton.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">showBottomDialog()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">newPostBtn.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">Intent intent = </span><span class="s0">new </span><span class="s1">Intent(getActivity()</span><span class="s0">, </span><span class="s1">UploadPostActivity.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s0">return </span><span class="s1">view</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">showBottomDialog(){</span>
+
+        <span class="s0">final </span><span class="s1">Dialog dialog = </span><span class="s0">new </span><span class="s1">Dialog(getActivity())</span><span class="s0">;</span>
+        <span class="s1">dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)</span><span class="s0">;</span>
+        <span class="s1">dialog.setContentView(R.layout.bottomsheet_layout)</span><span class="s0">;</span>
+
+        <span class="s1">TextView phoneText = dialog.findViewById(R.id.textPhone)</span><span class="s0">;</span>
+        <span class="s1">TextView phoneAddText = dialog.findViewById(R.id.textPhoneAdditional)</span><span class="s0">;</span>
+        <span class="s1">TextView websiteText = dialog.findViewById(R.id.textWebsite)</span><span class="s0">;</span>
+        <span class="s1">TextView emailText = dialog.findViewById(R.id.textEmail)</span><span class="s0">;</span>
+
+        <span class="s1">firebaseAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+        <span class="s1">user = firebaseAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">database = FirebaseDatabase.getInstance()</span><span class="s0">;</span>
+        <span class="s1">reference = database.getReference(</span><span class="s3">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">Query query = reference.orderByChild(</span><span class="s3">&quot;id&quot;</span><span class="s1">).equalTo(user.getUid())</span><span class="s0">;</span>
+        <span class="s1">query.addValueEventListener(</span><span class="s0">new </span><span class="s1">ValueEventListener() {</span>
+            <span class="s1">@SuppressLint(</span><span class="s3">&quot;SetTextI18n&quot;</span><span class="s1">)</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onDataChange(@NonNull DataSnapshot snapshot) {</span>
+                <span class="s0">for </span><span class="s1">(DataSnapshot ds : snapshot.getChildren()){</span>
+                    <span class="s1">phone = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;number&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">phoneAdd = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;additionalNumber&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">website = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;websiteLink&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+                    <span class="s1">email = </span><span class="s3">&quot;&quot;</span><span class="s1">+ ds.child(</span><span class="s3">&quot;contactEmail&quot;</span><span class="s1">).getValue()</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(phone.isEmpty())</span>
+                        <span class="s1">phoneText.setText(</span><span class="s3">&quot;Номер не указан&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">phoneText.setText(phone)</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(phoneAdd.isEmpty())</span>
+                        <span class="s1">phoneAddText.setText(</span><span class="s3">&quot;Номер не указан&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">phoneAddText.setText(phoneAdd)</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(website.isEmpty())</span>
+                        <span class="s1">websiteText.setText(</span><span class="s3">&quot;Адрес не указан&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">websiteText.setText(website)</span><span class="s0">;</span>
+
+                    <span class="s0">if</span><span class="s1">(email.isEmpty())</span>
+                        <span class="s1">emailText.setText(</span><span class="s3">&quot;Почта не указана&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">else</span>
+                        <span class="s1">emailText.setText(email)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onCancelled(@NonNull DatabaseError error) {</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Не удалось загрузить данные&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">dialog.dismiss()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">phone = Objects.requireNonNull(phoneText.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">phoneAdd = Objects.requireNonNull(phoneAddText.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">website = Objects.requireNonNull(websiteText.getText()).toString().trim()</span><span class="s0">;</span>
+        <span class="s1">email = Objects.requireNonNull(emailText.getText()).toString().trim()</span><span class="s0">;</span>
+
+        <span class="s1">phoneText.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE)</span><span class="s0">;</span>
+                <span class="s1">ClipData clip = ClipData.newPlainText(</span><span class="s3">&quot;Номер телефона скопирован&quot;</span><span class="s0">, </span><span class="s1">phone)</span><span class="s0">;</span>
+                <span class="s1">clipboard.setPrimaryClip(clip)</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Номер скопирован&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">phoneAddText.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE)</span><span class="s0">;</span>
+                <span class="s1">ClipData clip = ClipData.newPlainText(</span><span class="s3">&quot;Дополнительный номер телефона скопирован&quot;</span><span class="s0">, </span><span class="s1">phoneAdd)</span><span class="s0">;</span>
+                <span class="s1">clipboard.setPrimaryClip(clip)</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Номер скопирован&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">websiteText.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE)</span><span class="s0">;</span>
+                <span class="s1">ClipData clip = ClipData.newPlainText(</span><span class="s3">&quot;Адрес сайта скопирован&quot;</span><span class="s0">, </span><span class="s1">website)</span><span class="s0">;</span>
+                <span class="s1">clipboard.setPrimaryClip(clip)</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Адрес скопирован&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">emailText.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE)</span><span class="s0">;</span>
+                <span class="s1">ClipData clip = ClipData.newPlainText(</span><span class="s3">&quot;Почта скопирована&quot;</span><span class="s0">, </span><span class="s1">email)</span><span class="s0">;</span>
+                <span class="s1">clipboard.setPrimaryClip(clip)</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(getActivity()</span><span class="s0">, </span><span class="s3">&quot;Почта скопирована&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s1">dialog.show()</span><span class="s0">;</span>
+        <span class="s1">dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT</span><span class="s0">, </span><span class="s1">ViewGroup.LayoutParams.WRAP_CONTENT)</span><span class="s0">;</span>
+        <span class="s1">dialog.getWindow().setBackgroundDrawable(</span><span class="s0">new </span><span class="s1">ColorDrawable(Color.TRANSPARENT))</span><span class="s0">;</span>
+        <span class="s1">dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation</span><span class="s0">;</span>
+        <span class="s1">dialog.getWindow().setGravity(Gravity.BOTTOM)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
