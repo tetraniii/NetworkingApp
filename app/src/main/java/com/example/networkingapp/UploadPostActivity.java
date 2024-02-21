@@ -84,7 +84,7 @@ public class UploadPostActivity extends AppCompatActivity {
         uploadPostCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -112,7 +112,7 @@ public class UploadPostActivity extends AppCompatActivity {
                 imageURL = urlImage.toString();
                 uploadData();
                 dialog.dismiss();
-                Intent intent = new Intent(UploadPostActivity.this, DashboardActivity.class);
+                Intent intent = new Intent(UploadPostActivity.this, StartupDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }

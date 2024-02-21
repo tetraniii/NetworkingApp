@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.Manifest;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -50,8 +49,9 @@ public class ProfileEditActivity extends AppCompatActivity {
     StorageReference storageReference;
     String imageURL;
     ImageButton closeBtn, saveBtn;
-    TextInputEditText editTextName, editTextDesc, linksNbrTI, linksNbrAdtnlTI, linksWebsiteTI, linksEmailTI;
-    MaterialButton btnEditUserPic, btnAddContact;
+    TextInputEditText editTextName, editTextDesc, linksNbrTI, linksNbrAdtnlTI, linksWebsiteTI, linksEmailTI, editWebsiteLink,
+    editPhoneNum;
+    MaterialButton btnEditUserPic, btnAddLink;
     ImageView userPicIv;
     Uri uri;
 
@@ -64,6 +64,8 @@ public class ProfileEditActivity extends AppCompatActivity {
         saveBtn = findViewById(R.id.btnSaveProfileEdit);
         editTextName = findViewById(R.id.editTextName);
         editTextDesc = findViewById(R.id.editTextDesc);
+        editWebsiteLink = findViewById(R.id.editWebsiteLink);
+        editPhoneNum = findViewById(R.id.editPhoneNum);
         /*
         linksNbrTI = findViewById(R.id.linksNbrTI);
         linksNbrAdtnlTI = findViewById(R.id.linksNbrAdtnlTI);
@@ -71,7 +73,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         linksEmailTI = findViewById(R.id.linksEmailTI);*/
         btnEditUserPic = findViewById(R.id.btnEditUserPic);
         userPicIv = findViewById(R.id.userPicIv);
-        btnAddContact = findViewById(R.id.btnAddContact);
+        btnAddLink = findViewById(R.id.btnAddContact);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -87,10 +89,10 @@ public class ProfileEditActivity extends AppCompatActivity {
                     editTextName.setText("" + ds.child("name").getValue());
                     editTextDesc.setText("" + ds.child("description").getValue());
                     String imageURL = ""+ ds.child("image").getValue();
-                    linksNbrTI.setText(""+ ds.child("number").getValue());
-                    linksNbrAdtnlTI.setText(""+ ds.child("additionalNumber").getValue());
-                    linksWebsiteTI.setText(""+ ds.child("websiteLink").getValue());
-                    linksEmailTI.setText(""+ ds.child("contactEmail").getValue());
+                    //linksNbrTI.setText(""+ ds.child("number").getValue());
+                    //linksNbrAdtnlTI.setText(""+ ds.child("additionalNumber").getValue());
+                    //linksWebsiteTI.setText(""+ ds.child("websiteLink").getValue());
+                    //linksEmailTI.setText(""+ ds.child("contactEmail").getValue());
 
                     try {
                         Picasso.get().load(imageURL).into(userPicIv);
@@ -146,7 +148,7 @@ public class ProfileEditActivity extends AppCompatActivity {
 
                 saveData();
 
-                Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+                Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -155,7 +157,7 @@ public class ProfileEditActivity extends AppCompatActivity {
         closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ProfileEditActivity.this, DashboardActivity.class);
+                Intent intent = new Intent(ProfileEditActivity.this, StartupDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -198,10 +200,10 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         String name = Objects.requireNonNull(editTextName.getText()).toString().trim();
         String desc = Objects.requireNonNull(editTextDesc.getText()).toString().trim();
-        String number = Objects.requireNonNull(linksNbrTI.getText()).toString().trim();
-        String addNumber = Objects.requireNonNull(linksNbrAdtnlTI.getText()).toString().trim();
-        String website = Objects.requireNonNull(linksWebsiteTI.getText()).toString().trim();
-        String email = Objects.requireNonNull(linksEmailTI.getText()).toString().trim();
+        //String number = Objects.requireNonNull(linksNbrTI.getText()).toString().trim();
+        //String addNumber = Objects.requireNonNull(linksNbrAdtnlTI.getText()).toString().trim();
+        //String website = Objects.requireNonNull(linksWebsiteTI.getText()).toString().trim();
+        //String email = Objects.requireNonNull(linksEmailTI.getText()).toString().trim();
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -211,9 +213,9 @@ public class ProfileEditActivity extends AppCompatActivity {
         reference.child(user.getUid()).child("name").setValue(name);
         reference.child(user.getUid()).child("description").setValue(desc);
         reference.child(user.getUid()).child("image").setValue(imageURL);
-        reference.child(user.getUid()).child("number").setValue(number);
+        /*reference.child(user.getUid()).child("number").setValue(number);
         reference.child(user.getUid()).child("additionalNumber").setValue(addNumber);
         reference.child(user.getUid()).child("websiteLink").setValue(website);
-        reference.child(user.getUid()).child("contactEmail").setValue(email);
+        reference.child(user.getUid()).child("contactEmail").setValue(email);*/
     }
 }

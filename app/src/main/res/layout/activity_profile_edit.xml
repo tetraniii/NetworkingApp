@@ -5,13 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ProfileEditActivity">
+    tools:context=".ProfileEditActivity"
+    android:background="@color/white">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        ><!--app:cardCornerRadius="20dp"-->
+    <!--app:cardCornerRadius="20dp"-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,42 +59,36 @@
                         android:layout_height="wrap_content"
                         android:background="#00FFFFFF"
                         android:src="@drawable/ic_button_done"
-                        android:paddingRight="5dp"/>
+                        android:paddingEnd="5dp"/>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="180dp"
+                        android:background="@color/lightPurple">
 
-                        <RelativeLayout
+                        <ImageView
+                            android:id="@+id/userPicIv"
                             android:layout_width="match_parent"
-                            android:layout_height="180dp"
-                            android:background="@color/lightPurple">
+                            android:layout_height="match_parent"
+                            android:scaleType="fitXY"/>
 
-                            <ImageView
-                                android:id="@+id/userPicIv"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="fitXY"/>
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnEditUserPic"
-                                android:theme="@style/MaterialButton"
-                                app:icon="@drawable/ic_edit_profile"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/changePicRu"
-                                android:layout_marginStart="10dp"
-                                android:layout_marginTop="10dp"
-                                app:iconSize="25dp"/>
-
-                        </RelativeLayout>
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnEditUserPic"
+                            android:theme="@style/MaterialButton"
+                            app:icon="@drawable/ic_edit_profile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/changePicRu"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            app:iconSize="25dp"/>
 
                     </RelativeLayout>
 
@@ -119,8 +110,7 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/editTextName"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"/>
+                                android:layout_height="wrap_content"/>
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -136,12 +126,41 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/editTextDesc"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"/>
+                                android:layout_height="wrap_content"/>
 
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/WebsiteLinkHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
 
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editWebsiteLink"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/PhoneNumHintRu"
+                            android:textSize="15sp"
+                            android:paddingTop="10dp"
+                            android:theme="@style/textInputLayoutDataChange"
+                            style="@style/textInputLayoutDataChange">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editPhoneNum"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <!--
                         <TextView
@@ -269,7 +288,7 @@
                             android:theme="@style/MaterialButton"
                             android:layout_marginStart="20dp"
                             android:layout_marginBottom="10dp"
-                            android:text="@string/addContactRu"
+                            android:text="@string/AddLinkRu"
                             app:icon="@drawable/ic_add"
                             app:iconSize="25dp"/>
 
@@ -278,7 +297,5 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
 
 </ScrollView>

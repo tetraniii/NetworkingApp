@@ -44,5 +44,9 @@
     <string name="loadingRu">Загрузка...</string>
     <string name="logoutRu">Выйти из аккаунта</string>
     <string name="addContactRu">Добавить контакт</string>
+    <string name="AddLinkRu">Добавить ссылку</string>
+    <string name="WebsiteLinkHintRu">Введите ссылку на ваш сайт</string>
+    <string name="PhoneNumHintRu">Введите номер телефона</string>
+    <string name="FavouriteRu">Избранное</string>
 
 </resources>

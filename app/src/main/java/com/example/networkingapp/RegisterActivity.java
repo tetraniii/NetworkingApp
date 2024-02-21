@@ -37,7 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), DashboardActivity.class);
+            Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
             startActivity(intent);
             finish();
         }

@@ -32,8 +32,8 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/fab"
                 style="@style/Widget.Material3.Button.Icon"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
@@ -44,7 +44,7 @@
                 android:insetBottom="0dp"
                 app:icon="@drawable/ic_edit_profile"
                 app:iconPadding="0dp"
-                app:iconSize="28dp"
+                app:iconSize="25dp"
                 app:shapeAppearanceOverlay="@style/RoundButton" />
 
             <!--

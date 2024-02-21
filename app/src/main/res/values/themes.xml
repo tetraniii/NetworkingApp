@@ -37,6 +37,7 @@
         <item name="boxBackgroundColor">@color/white</item>
         <item name="android:textColorHint">@color/buttons</item>
         <item name="hintTextColor">@color/buttons</item>
+        <item name="android:textColor">@color/black</item>
     </style>
     
     <style name="DialogAnimation">
@@ -57,7 +58,7 @@
     </style>
 
     <style name="MaterialButton" parent="Widget.Material3.Button.Icon">
-        <item name="android:backgroundTint">@color/transparentButtons</item>
+        <item name="android:backgroundTint">@color/transparentButtonsVer2</item>
     </style>
 
 </resources>
