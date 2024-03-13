@@ -1,7 +1,5 @@
 package com.example.networkingapp;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -10,17 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -34,7 +28,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
@@ -110,63 +103,49 @@ public class ProfileEditActivity extends AppCompatActivity {
 
         ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            uri = data.getData();
-                            userPicIv.setImageURI(uri);
-                        } else {
-                            Toast.makeText(ProfileEditActivity.this, "Не выбрано изображение", Toast.LENGTH_SHORT).show();
-                        }
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        uri = data.getData();
+                        userPicIv.setImageURI(uri);
+                    } else {
+                        Toast.makeText(ProfileEditActivity.this, "Не выбрано изображение", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
 
-        btnEditUserPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnEditUserPic.setOnClickListener(v -> {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileEditActivity.this);
-                    builder.setMessage(R.string.changePicDialog)
-                            .setPositiveButton(R.string.gotItRu, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    Intent photoPicker = new Intent(Intent.ACTION_PICK);
-                                    photoPicker.setType("image/*");
-                                    activityResultLauncher.launch(photoPicker);
-                                }
-                            });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileEditActivity.this);
+                builder.setMessage(R.string.changePicDialog)
+                        .setPositiveButton(R.string.gotItRu, (dialog, id) -> {
+                            Intent photoPicker = new Intent(Intent.ACTION_PICK);
+                            photoPicker.setType("image/*");
+                            activityResultLauncher.launch(photoPicker);
+                        });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
 
-        saveBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        saveBtn.setOnClickListener(v -> {
 
-                saveData();
+            saveData();
 
-                Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ProfileEditActivity.this, StartupDashboardActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        closeBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileEditActivity.this, StartupDashboardActivity.class);
+            startActivity(intent);
+            finish();
         });
 
     }
 
     public void saveData() {
-        storageReference = FirebaseStorage.getInstance().getReference().child("Android Images")
+        storageReference = FirebaseStorage.getInstance().getReference().child("Profile Images")
                 .child(uri.getLastPathSegment());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ProfileEditActivity.this);
@@ -175,24 +154,18 @@ public class ProfileEditActivity extends AppCompatActivity {
         AlertDialog dialogSave = builder.create();
         dialogSave.show();
 
-        storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+        storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
 
-                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                while (!uriTask.isComplete()) ;
-                Uri urlImage = uriTask.getResult();
-                imageURL = urlImage.toString();
-                uploadData();
-                dialogSave.dismiss();
+            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+            while (!uriTask.isComplete()) ;
+            Uri urlImage = uriTask.getResult();
+            imageURL = urlImage.toString();
+            uploadData();
+            dialogSave.dismiss();
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(ProfileEditActivity.this, "Не удалось сохранить данные", Toast.LENGTH_SHORT).show();
-                dialogSave.dismiss();
-            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(ProfileEditActivity.this, "Не удалось сохранить данные", Toast.LENGTH_SHORT).show();
+            dialogSave.dismiss();
         });
     }
 
@@ -208,14 +181,14 @@ public class ProfileEditActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference("Users");
+        reference = database.getReference("Users").child(user.getUid());
 
-        reference.child(user.getUid()).child("name").setValue(name);
-        reference.child(user.getUid()).child("description").setValue(desc);
-        reference.child(user.getUid()).child("image").setValue(imageURL);
-        /*reference.child(user.getUid()).child("number").setValue(number);
-        reference.child(user.getUid()).child("additionalNumber").setValue(addNumber);
-        reference.child(user.getUid()).child("websiteLink").setValue(website);
-        reference.child(user.getUid()).child("contactEmail").setValue(email);*/
+        reference.child("name").setValue(name);
+        reference.child("description").setValue(desc);
+        reference.child("image").setValue(imageURL);
+        /*reference.child("number").setValue(number);
+        reference.child("additionalNumber").setValue(addNumber);
+        reference.child("websiteLink").setValue(website);
+        reference.child("contactEmail").setValue(email);*/
     }
 }

@@ -1,7 +1,7 @@
 package com.example.networkingapp;
 
 public class PostsClass {
-
+    //TODO: добавить дату создания поста
     private String postText;
     private String postImage;
     private String authorID;

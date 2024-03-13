@@ -135,6 +135,7 @@ public class UploadPostActivity extends AppCompatActivity {
         String uid = user.getUid();
         PostsClass postsClass = new PostsClass(text, imageURL, uid);
 
+        assert key != null;
         FirebaseDatabase.getInstance().getReference("Posts").child(key)
                 .setValue(postsClass).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
