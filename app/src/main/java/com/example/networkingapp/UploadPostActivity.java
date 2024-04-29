@@ -29,6 +29,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class UploadPostActivity extends AppCompatActivity {
 
     ImageView uploadPostImage;
@@ -133,7 +136,8 @@ public class UploadPostActivity extends AppCompatActivity {
         String key = database.getReference("Posts").push().getKey();
         String text = uploadPostText.getText().toString();
         String uid = user.getUid();
-        PostsClass postsClass = new PostsClass(text, imageURL, uid);
+        String date = longIntoString(getCurrentDateInMilliseconds());
+        PostsClass postsClass = new PostsClass(text, imageURL, uid, date);
 
         assert key != null;
         FirebaseDatabase.getInstance().getReference("Posts").child(key)
@@ -151,5 +155,13 @@ public class UploadPostActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private long getCurrentDateInMilliseconds(){return Calendar.getInstance().getTimeInMillis();}
+
+    private String longIntoString(long milliseconds){
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
+        return dateFormat.format(milliseconds)+ timeFormat.format(milliseconds);
     }
 }

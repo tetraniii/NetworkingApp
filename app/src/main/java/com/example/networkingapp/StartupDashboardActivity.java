@@ -6,9 +6,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import com.example.networkingapp.fragments.HomeFragment;
 import com.example.networkingapp.fragments.ProfileFragment;
 import com.example.networkingapp.fragments.SettingsFragment;
+import com.example.networkingapp.fragments.StartupHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -32,7 +32,7 @@ public class StartupDashboardActivity extends AppCompatActivity {
 
                 int itemId = item.getItemId();
                 if (itemId == R.id.startup_nav_home) {
-                        HomeFragment fragment1 = new HomeFragment();
+                        StartupHomeFragment fragment1 = new StartupHomeFragment();
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         FragmentTransaction ft1 = fragmentManager.beginTransaction();
                         ft1.replace(R.id.startupContent, fragment1, "");

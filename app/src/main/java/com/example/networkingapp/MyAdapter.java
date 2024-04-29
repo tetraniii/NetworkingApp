@@ -39,6 +39,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         Glide.with(context).load(postsList.get(position).getPostImage()).into(holder.recImage);
         holder.recText.setText(postsList.get(position).getPostText());
+        holder.recAuthor.setText(postsList.get(position).getAuthorID());
 
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +60,8 @@ class MyViewHolder extends RecyclerView.ViewHolder{
 
     ImageView recImage;
     TextView recText;
+    TextView recAuthor;
+    TextView recDate;
     CardView recCard;
 
     public MyViewHolder(@NonNull View itemView) {

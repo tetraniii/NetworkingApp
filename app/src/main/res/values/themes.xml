@@ -61,4 +61,8 @@
         <item name="android:backgroundTint">@color/transparentButtonsVer2</item>
     </style>
 
+    <style name="homeToggleButton" parent="Widget.Material3.MaterialButtonToggleGroup">
+        <item name="strokeColor">@color/buttons</item>
+    </style>
+
 </resources>

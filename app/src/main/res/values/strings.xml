@@ -48,5 +48,10 @@
     <string name="WebsiteLinkHintRu">Введите ссылку на ваш сайт</string>
     <string name="PhoneNumHintRu">Введите номер телефона</string>
     <string name="FavouriteRu">Избранное</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="searchRu">Поиск</string>
+    <string name="newPostsRu">Новые посты</string>
+    <string name="followPostsRu">Ваши подписки</string>
 
 </resources>

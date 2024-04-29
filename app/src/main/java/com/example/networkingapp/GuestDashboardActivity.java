@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import com.example.networkingapp.fragments.HomeFragment;
+import com.example.networkingapp.fragments.GuestHomeFragment;
 import com.example.networkingapp.fragments.ProfileFragment;
 import com.example.networkingapp.fragments.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,7 +31,7 @@ public class GuestDashboardActivity extends AppCompatActivity {
 
                 int itemId = item.getItemId();
                 if (itemId == R.id.guest_nav_home) {
-                    HomeFragment fragment1 = new HomeFragment();
+                    GuestHomeFragment fragment1 = new GuestHomeFragment();
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction ft1 = fragmentManager.beginTransaction();
                     ft1.replace(R.id.guestContent, fragment1, "");

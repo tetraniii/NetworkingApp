@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class HomeFragment extends Fragment {
+public class GuestHomeFragment extends Fragment {
 
     FirebaseAuth firebaseAuth;
     FirebaseUser user;
@@ -23,13 +23,13 @@ public class HomeFragment extends Fragment {
 
 
 
-    public HomeFragment() {
+    public GuestHomeFragment() {
         // Required empty public constructor
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_guest_home, container, false);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
