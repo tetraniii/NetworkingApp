@@ -7,13 +7,13 @@
     android:background="@color/white"
     tools:context=".fragments.GuestHomeFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_margin="20dp">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchTIL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/searchRu"
@@ -35,10 +35,11 @@
             android:layout_height="wrap_content"
             app:singleSelection="true"
             android:layout_marginTop="10dp"
-            style="@style/homeToggleButton">
+            style="@style/homeToggleButton"
+            android:layout_below="@+id/searchTIL">
             <Button
                 style="?attr/materialButtonOutlinedStyle"
-                android:id="@+id/button1"
+                android:id="@+id/btnNewPosts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/newPostsRu"
@@ -46,7 +47,7 @@
                 />
             <Button
                 style="?attr/materialButtonOutlinedStyle"
-                android:id="@+id/button2"
+                android:id="@+id/btnYourSub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/followPostsRu"
@@ -55,12 +56,22 @@
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
+        <TextView
+            android:id="@+id/no_subscriptions_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Нет подписок"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postsRV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/homeToggleButton"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </ScrollView>

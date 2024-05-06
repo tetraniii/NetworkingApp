@@ -7,8 +7,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.example.networkingapp.fragments.GuestHomeFragment;
-import com.example.networkingapp.fragments.ProfileFragment;
 import com.example.networkingapp.fragments.SettingsFragment;
+import com.example.networkingapp.fragments.SubscriptionsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -37,8 +37,8 @@ public class GuestDashboardActivity extends AppCompatActivity {
                     ft1.replace(R.id.guestContent, fragment1, "");
                     ft1.commit();
                     return true;
-                } else if (itemId == R.id.guest_nav_profile) {
-                    ProfileFragment fragment2 = new ProfileFragment();
+                } else if (itemId == R.id.guest_nav_sub) {
+                    SubscriptionsFragment fragment2 = new SubscriptionsFragment();
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction ft2 = fragmentManager.beginTransaction();
                     ft2.replace(R.id.guestContent, fragment2, "");

@@ -62,6 +62,7 @@ public class ProfileFragment extends Fragment {
     List<PostsClass> postsList;
     ValueEventListener eventListener;
 
+
     public ProfileFragment() {
         // Required empty public constructor
     }

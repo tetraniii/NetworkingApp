@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -24,7 +25,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -41,6 +48,8 @@ public class UploadPostActivity extends AppCompatActivity {
     Uri uri;
     FirebaseAuth firebaseAuth;
     FirebaseUser user;
+    DatabaseReference reference;
+    FirebaseDatabase databaseUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +128,7 @@ public class UploadPostActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                dialog.dismiss();
-            }
-        });
+        }).addOnFailureListener(e -> dialog.dismiss());
     }
 
     public void uploadData(){
@@ -132,16 +136,33 @@ public class UploadPostActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-
         String key = database.getReference("Posts").push().getKey();
-        String text = uploadPostText.getText().toString();
-        String uid = user.getUid();
-        String date = longIntoString(getCurrentDateInMilliseconds());
-        PostsClass postsClass = new PostsClass(text, imageURL, uid, date);
+        PostsClass post = new PostsClass();
+        post.setPostText(uploadPostText.getText().toString());
+        post.setAuthorID(user.getUid());
+        post.setPostImage(imageURL);
+        post.setTimestamp(ServerValue.TIMESTAMP);
+
+        reference = databaseUsers.getReference("Users");
+        Query query = reference.orderByChild("id").equalTo(user.getUid());
+        query.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String name = ""+ ds.child("name").getValue();
+                    post.setAuthorName(name);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UploadPostActivity.this, "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         assert key != null;
-        FirebaseDatabase.getInstance().getReference("Posts").child(key)
-                .setValue(postsClass).addOnCompleteListener(new OnCompleteListener<Void>() {
+        database.getReference("Posts").child(key)
+                .setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
@@ -154,14 +175,5 @@ public class UploadPostActivity extends AppCompatActivity {
                         Toast.makeText(UploadPostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
-    }
-
-    private long getCurrentDateInMilliseconds(){return Calendar.getInstance().getTimeInMillis();}
-
-    private String longIntoString(long milliseconds){
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy");
-        return dateFormat.format(milliseconds)+ timeFormat.format(milliseconds);
     }
 }

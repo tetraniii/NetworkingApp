@@ -34,10 +34,30 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         currentUser = mAuth.getCurrentUser();
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("Users");
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
-            startActivity(intent);
-            finish();
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        boolean userIsStartup = Boolean.parseBoolean(String.valueOf(ds.child("userIsStartUp").getValue()));
+                        Intent intent;
+                        if (userIsStartup) {
+                            intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
+                        } else {
+                            intent = new Intent(getApplicationContext(), GuestDashboardActivity.class);
+                        }
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(LoginActivity.this, "Не удалось войти в аккаунт", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 

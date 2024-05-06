@@ -5,7 +5,7 @@
         android:title="@string/homeRu"
         android:icon="@drawable/ic_home_black" />
 
-    <item android:id="@+id/guest_nav_profile"
+    <item android:id="@+id/guest_nav_sub"
         android:title="@string/FavouriteRu"
         android:icon="@drawable/ic_favourite_black"/>
 
