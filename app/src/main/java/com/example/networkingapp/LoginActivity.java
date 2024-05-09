@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,58 +28,23 @@ public class LoginActivity extends AppCompatActivity {
     Button buttonLogin;
     FirebaseAuth mAuth;
     TextView textView;
-    FirebaseUser currentUser;
-    DatabaseReference reference;
     FirebaseDatabase database;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        currentUser = mAuth.getCurrentUser();
-        database = FirebaseDatabase.getInstance();
-        reference = database.getReference("Users");
-        if(currentUser != null){
-            reference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        boolean userIsStartup = Boolean.parseBoolean(String.valueOf(ds.child("userIsStartUp").getValue()));
-                        Intent intent;
-                        if (userIsStartup) {
-                            intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
-                        } else {
-                            intent = new Intent(getApplicationContext(), GuestDashboardActivity.class);
-                        }
-                        startActivity(intent);
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(LoginActivity.this, "Не удалось войти в аккаунт", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
         buttonLogin = findViewById(R.id.btn_Login);
         textView = findViewById(R.id.registerNow);
 
+        mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-        reference = database.getReference("Users");
         textView.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
-            finish();
         });
 
         buttonLogin.setOnClickListener(v -> {
@@ -97,32 +64,41 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            reference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    for (DataSnapshot ds : snapshot.getChildren()) {
-                                        boolean userIsStartup = Boolean.parseBoolean(String.valueOf(ds.child("userIsStartUp").getValue()));
-                                        Intent intent;
-                                        if (userIsStartup) {
-                                            intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
+                            FirebaseUser currentUser = mAuth.getCurrentUser();
+                            if (currentUser != null) {
+                                DatabaseReference userRef = database.getReference().child("Users").child(currentUser.getUid());
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.exists()) {
+                                            boolean userIsStartup = snapshot.child("userIsStartup").getValue(Boolean.class);
+                                            if (userIsStartup) {
+                                                startActivity(new Intent(LoginActivity.this, StartupDashboardActivity.class));
+                                                finish();
+                                            } else {
+                                                startActivity(new Intent(LoginActivity.this, GuestDashboardActivity.class));
+                                                finish();
+                                            }
                                         } else {
-                                            intent = new Intent(getApplicationContext(), GuestDashboardActivity.class);
+                                            Log.e("Firebase Login", "Данные о пользователе не найдены. Login");
+                                            Toast.makeText(LoginActivity.this, "Данные о пользователе не найдены. Login", Toast.LENGTH_SHORT).show();
                                         }
-                                        startActivity(intent);
-                                        finish();
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(LoginActivity.this, "The read failed: " + error.getCode(),
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginActivity.this, "Неверные данные",
-                                    Toast.LENGTH_SHORT).show();
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        int errorCode = error.getCode();
+                                        String errorMessage = error.getMessage();
+                                        Log.e("Firebase Main", "Database error: " + errorCode + " " + errorMessage);
+                                    }
+                                });
+                            }
+                        }else {
+                            if(task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(LoginActivity.this, "Неверный email или пароль", Toast.LENGTH_SHORT).show();
+                            }else {
+                                Toast.makeText(LoginActivity.this, "Ошибка входа в аккаунт", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
 

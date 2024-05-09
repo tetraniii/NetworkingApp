@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.example.networkingapp.MyAdapter;
 import com.example.networkingapp.PostsClass;
 import com.example.networkingapp.ProfileEditActivity;
 import com.example.networkingapp.R;
+import com.example.networkingapp.StartupDashboardActivity;
 import com.example.networkingapp.UploadPostActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -116,7 +118,8 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Ошибка загрузки данных", Toast.LENGTH_SHORT).show();
+                Log.e("Firebase Profile", error.getMessage());
+                //Toast.makeText(StartupDashboardActivity.this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show();
             }
         });
 

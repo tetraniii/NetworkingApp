@@ -65,4 +65,9 @@
         <item name="strokeColor">@color/buttons</item>
     </style>
 
+    <style name="logoMainActivity" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">@color/lightBlue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">35sp</item>
+    </style>
 </resources>

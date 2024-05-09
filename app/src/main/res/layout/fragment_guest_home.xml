@@ -60,9 +60,10 @@
             android:id="@+id/no_subscriptions_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_below="@+id/homeToggleButton"
             android:text="Нет подписок"
             android:layout_centerInParent="true"
+            android:layout_marginTop="20dp"
             android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView

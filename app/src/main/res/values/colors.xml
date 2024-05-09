@@ -7,5 +7,6 @@
     <color name="transparentButtons">#518149C8</color>
     <color name="transparentButtonsVer2">#5161309F</color>
     <color name="lightPurple">#d2b7ff</color>
-    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/buttons</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#9d58f3</color>
+    <color name="lightBlue">#FF65DCF1</color>
 </resources>

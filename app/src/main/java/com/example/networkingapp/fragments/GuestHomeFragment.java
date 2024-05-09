@@ -77,30 +77,29 @@ public class GuestHomeFragment extends Fragment {
         btnNewPosts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAllPosts = true;
-                loadPosts();
+                loadPosts(true);
             }
         });
 
         btnYourSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAllPosts = false;
-                loadPosts();
+                loadPosts(false);
             }
         });
 
         // По умолчанию показываем все посты
-        loadPosts();
+        loadPosts(true);
 
         return view;
     }
 
-    private void loadPosts(){
+    private void loadPosts(boolean showAllPosts){
+        hideNoSubscriptionsMessage();
         adapter.clear();
         if(showAllPosts){
             //Загружаем все посты
-            Query query = postsRef.orderByChild("timestamp").limitToLast(100); // Пример: загрузить 100 последних постов
+            Query query = postsRef.orderByChild("timestamp").limitToFirst(100); // Пример: загрузить 100 последних постов
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -166,5 +165,9 @@ public class GuestHomeFragment extends Fragment {
     private void showNoSubscriptionsMessage(){
         noSubscriptionsTextView.setVisibility((View.VISIBLE));
         postsRV.setVisibility(View.GONE);
+    }
+    private void hideNoSubscriptionsMessage(){
+        noSubscriptionsTextView.setVisibility((View.GONE));
+        postsRV.setVisibility(View.VISIBLE);
     }
 }

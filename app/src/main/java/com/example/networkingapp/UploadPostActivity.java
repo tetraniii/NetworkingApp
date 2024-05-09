@@ -13,6 +13,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -96,7 +97,7 @@ public class UploadPostActivity extends AppCompatActivity {
         uploadPostCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
+                Intent intent = new Intent(UploadPostActivity.this, StartupDashboardActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -132,34 +133,40 @@ public class UploadPostActivity extends AppCompatActivity {
     }
 
     public void uploadData(){
-
+        try {
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String key = database.getReference("Posts").push().getKey();
+
         PostsClass post = new PostsClass();
         post.setPostText(uploadPostText.getText().toString());
         post.setAuthorID(user.getUid());
         post.setPostImage(imageURL);
         post.setTimestamp(ServerValue.TIMESTAMP);
 
-        reference = databaseUsers.getReference("Users");
-        Query query = reference.orderByChild("id").equalTo(user.getUid());
-        query.addValueEventListener(new ValueEventListener() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        Query query = usersRef.orderByChild("id").equalTo(user.getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     String name = ""+ ds.child("name").getValue();
-                    post.setAuthorName(name);
+                    try{
+                        post.setAuthorName(name);
+                    }catch (Exception e){
+                        Log.e("Posts Class", "Error" + e.getMessage());
+                    }
+
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Post", "Error: " + error.getMessage());
                 Toast.makeText(UploadPostActivity.this, "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
             }
         });
-
         assert key != null;
         database.getReference("Posts").child(key)
                 .setValue(post).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -175,5 +182,9 @@ public class UploadPostActivity extends AppCompatActivity {
                         Toast.makeText(UploadPostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+        }catch (Exception e){
+            Log.e("Firebase Post", "Error: " + e.getMessage());
+        }
+
     }
 }

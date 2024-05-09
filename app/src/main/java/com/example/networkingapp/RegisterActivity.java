@@ -18,8 +18,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
@@ -31,18 +34,8 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     TextView textView;
     FirebaseDatabase database;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), StartupDashboardActivity.class);
-            startActivity(intent);
-            finish();
-        }
-    }
-
+    FirebaseUser currentUser;
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,9 +143,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                                     Toast.makeText(RegisterActivity.this, "Аккаунт успешно создан",
                                             Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
-                                    finish();
                                 } else {
                                     Toast.makeText(RegisterActivity.this, "Введите действительный email или аккаунт с таким email уже существует",
                                             Toast.LENGTH_SHORT).show();
