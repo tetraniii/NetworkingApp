@@ -45,6 +45,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,10 +84,10 @@ public class ProfileFragment extends Fragment {
         userPicIv = view.findViewById(R.id.userPicIv);
         nameTv = view.findViewById(R.id.nameTv);
         descriptionTv = view.findViewById(R.id.descriptionTv);
-        linksButton = (MaterialButton) view.findViewById(R.id.btnLinks);
-        editProfileButton = (MaterialButton) view.findViewById(R.id.fab);
-        newPostBtn = (Button) view.findViewById(R.id.newPostBtn);
-        recyclerView = (RecyclerView)  view.findViewById(R.id.postsRV);
+        linksButton = view.findViewById(R.id.btnLinks);
+        editProfileButton = view.findViewById(R.id.fab);
+        newPostBtn = view.findViewById(R.id.newPostBtn);
+        recyclerView = view.findViewById(R.id.postsRV);
 
         Query query = reference.orderByChild("id").equalTo(user.getUid());
         query.addValueEventListener(new ValueEventListener() {
@@ -139,29 +141,31 @@ public class ProfileFragment extends Fragment {
 
         reference = FirebaseDatabase.getInstance().getReference("Posts");
         dialog.show();
-
-        eventListener = reference.addValueEventListener(new ValueEventListener() {
+        Query queryPosts = (Query) reference.orderByChild("authorID").equalTo(user.getUid());
+        eventListener = queryPosts.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 postsList.clear();
-                for(DataSnapshot itemSnapshot: snapshot.getChildren()){
-                    PostsClass postsClass = itemSnapshot.getValue(PostsClass.class);
-                    if(Objects.equals(postsClass.getAuthorID(), user.getUid())){
-                        postsList.add(postsClass);
+                for(DataSnapshot ds : snapshot.getChildren()){
+                    PostsClass post = ds.getValue(PostsClass.class);
+                    if(Objects.equals(post.getAuthorID(), user.getUid())){
+                        post.setAuthorName(snapshot.child("name").getValue(String.class));
+                        postsList.add(post);
                     }
                 }
+                postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Profile", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
+                Toast.makeText(getActivity(), "Не удалось загрузить данные о постах",
+                        Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
         });
-
-
-
 
         editProfileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,44 +254,32 @@ public class ProfileFragment extends Fragment {
         website = Objects.requireNonNull(websiteText.getText()).toString().trim();
         email = Objects.requireNonNull(emailText.getText()).toString().trim();
 
-        phoneText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Номер телефона скопирован", phone);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getActivity(), "Номер скопирован", Toast.LENGTH_SHORT).show();
-            }
+        phoneText.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Номер телефона скопирован", phone);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getActivity(), "Номер скопирован", Toast.LENGTH_SHORT).show();
         });
 
-        phoneAddText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Дополнительный номер телефона скопирован", phoneAdd);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getActivity(), "Номер скопирован", Toast.LENGTH_SHORT).show();
-            }
+        phoneAddText.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Дополнительный номер телефона скопирован", phoneAdd);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getActivity(), "Номер скопирован", Toast.LENGTH_SHORT).show();
         });
 
-        websiteText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Адрес сайта скопирован", website);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getActivity(), "Адрес скопирован", Toast.LENGTH_SHORT).show();
-            }
+        websiteText.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Адрес сайта скопирован", website);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getActivity(), "Адрес скопирован", Toast.LENGTH_SHORT).show();
         });
 
-        emailText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Почта скопирована", email);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getActivity(), "Почта скопирована", Toast.LENGTH_SHORT).show();
-            }
+        emailText.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("Почта скопирована", email);
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getActivity(), "Почта скопирована", Toast.LENGTH_SHORT).show();
         });
 
         dialog.show();

@@ -27,8 +27,6 @@ public class PostsClass {
         this.authorID = authorID;
     }
 
-
-
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }

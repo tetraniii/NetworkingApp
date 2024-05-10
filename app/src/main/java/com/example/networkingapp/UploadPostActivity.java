@@ -39,6 +39,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class UploadPostActivity extends AppCompatActivity {
 
@@ -49,7 +50,7 @@ public class UploadPostActivity extends AppCompatActivity {
     Uri uri;
     FirebaseAuth firebaseAuth;
     FirebaseUser user;
-    DatabaseReference reference;
+    DatabaseReference reference, usersRef;
     FirebaseDatabase databaseUsers;
 
     @Override
@@ -145,20 +146,13 @@ public class UploadPostActivity extends AppCompatActivity {
         post.setPostImage(imageURL);
         post.setTimestamp(ServerValue.TIMESTAMP);
 
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        usersRef = database.getReference("Users");
         Query query = usersRef.orderByChild("id").equalTo(user.getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @SuppressLint("SetTextI18n")
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    String name = ""+ ds.child("name").getValue();
-                    try{
-                        post.setAuthorName(name);
-                    }catch (Exception e){
-                        Log.e("Posts Class", "Error" + e.getMessage());
-                    }
-
+                if(Objects.equals(post.getAuthorID(), user.getUid())) {
+                    post.setAuthorName(snapshot.child("name").getValue(String.class));
                 }
             }
             @Override

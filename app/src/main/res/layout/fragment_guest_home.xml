@@ -29,13 +29,12 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
+        <LinearLayout
+            android:orientation="horizontal"
             android:id="@+id/homeToggleButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
             android:layout_marginTop="10dp"
-            style="@style/homeToggleButton"
             android:layout_below="@+id/searchTIL">
             <Button
                 style="?attr/materialButtonOutlinedStyle"
@@ -44,6 +43,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/newPostsRu"
                 android:layout_weight="1"
+                android:layout_marginEnd="5dp"
                 />
             <Button
                 style="?attr/materialButtonOutlinedStyle"
@@ -52,9 +52,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/followPostsRu"
                 android:layout_weight="1"
+                android:layout_marginStart="5dp"
                 />
 
-        </com.google.android.material.button.MaterialButtonToggleGroup>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/no_subscriptions_text_view"

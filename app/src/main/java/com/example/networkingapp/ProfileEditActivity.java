@@ -11,6 +11,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -145,28 +146,33 @@ public class ProfileEditActivity extends AppCompatActivity {
     }
 
     public void saveData() {
-        storageReference = FirebaseStorage.getInstance().getReference().child("Profile Images")
-                .child(uri.getLastPathSegment());
+        try{
+            storageReference = FirebaseStorage.getInstance().getReference().child("Profile Images")
+                    .child(uri.getLastPathSegment());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileEditActivity.this);
-        builder.setCancelable(false);
-        builder.setView(R.layout.saving_layout);
-        AlertDialog dialogSave = builder.create();
-        dialogSave.show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileEditActivity.this);
+            builder.setCancelable(false);
+            builder.setView(R.layout.saving_layout);
+            AlertDialog dialogSave = builder.create();
+            dialogSave.show();
 
-        storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+            storageReference.putFile(uri).addOnSuccessListener(taskSnapshot -> {
 
-            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-            while (!uriTask.isComplete()) ;
-            Uri urlImage = uriTask.getResult();
-            imageURL = urlImage.toString();
-            uploadData();
-            dialogSave.dismiss();
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isComplete()) ;
+                Uri urlImage = uriTask.getResult();
+                imageURL = urlImage.toString();
+                uploadData();
+                dialogSave.dismiss();
 
-        }).addOnFailureListener(e -> {
-            Toast.makeText(ProfileEditActivity.this, "Не удалось сохранить данные", Toast.LENGTH_SHORT).show();
-            dialogSave.dismiss();
-        });
+            }).addOnFailureListener(e -> {
+                Toast.makeText(ProfileEditActivity.this, "Не удалось сохранить данные", Toast.LENGTH_SHORT).show();
+                dialogSave.dismiss();
+            });
+        }catch(Exception e){
+            Log.e("Firebase Image", "Error: " + e.getMessage());
+        }
+
     }
 
     public void uploadData() {

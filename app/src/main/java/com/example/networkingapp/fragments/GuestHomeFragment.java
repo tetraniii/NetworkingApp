@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,7 @@ import android.widget.Toast;
 import com.example.networkingapp.MyAdapter;
 import com.example.networkingapp.PostsClass;
 import com.example.networkingapp.R;
-import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,13 +39,12 @@ public class GuestHomeFragment extends Fragment {
     DatabaseReference postsRef;
     DatabaseReference usersRef;
     TextInputEditText editTextName;
-    MaterialButtonToggleGroup homeToggleButton;
     Button btnNewPosts, btnYourSub;
     RecyclerView postsRV;
     List<PostsClass> postsList;
     TextView noSubscriptionsTextView;
     MyAdapter adapter;
-    boolean showAllPosts = true; // Флаг, определяющий, нужно ли показывать все посты или только посты подписок
+    ValueEventListener eventListener;
 
     public GuestHomeFragment() {
         // Required empty public constructor
@@ -63,7 +61,6 @@ public class GuestHomeFragment extends Fragment {
         usersRef = database.getReference("Users");
 
         editTextName = view.findViewById(R.id.editTextName);
-        homeToggleButton = view.findViewById(R.id.homeToggleButton);
         btnNewPosts = view.findViewById(R.id.btnNewPosts);
         btnYourSub = view.findViewById(R.id.btnYourSub);
         noSubscriptionsTextView = view.findViewById(R.id.no_subscriptions_text_view);
@@ -80,7 +77,6 @@ public class GuestHomeFragment extends Fragment {
                 loadPosts(true);
             }
         });
-
         btnYourSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,19 +95,23 @@ public class GuestHomeFragment extends Fragment {
         adapter.clear();
         if(showAllPosts){
             //Загружаем все посты
-            Query query = postsRef.orderByChild("timestamp").limitToFirst(100); // Пример: загрузить 100 последних постов
-            query.addValueEventListener(new ValueEventListener() {
+            Query query = FirebaseDatabase.getInstance().getReference("Posts").limitToFirst(100); // Пример: загрузить 100 последних постов
+            eventListener = query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot ds : snapshot.getChildren()){
                         PostsClass post = ds.getValue(PostsClass.class);
+                        post.setAuthorName(getPostAuthorName(post.getAuthorID()));
                         postsList.add(post);
                     }
+                    postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
+                    adapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(requireContext(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
+                    Log.e("Firebase Home", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
+                    Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
                 }
             });
         } else{
@@ -144,7 +144,7 @@ public class GuestHomeFragment extends Fragment {
     private void loadPostsForSubscriptions(final List<String> subscriptions){
         adapter.clear();
         for(final String userID : subscriptions){
-            Query query = postsRef.orderByChild("authorID").equalTo(userID);
+            Query query = FirebaseDatabase.getInstance().getReference("Posts").orderByChild("authorID").equalTo(userID);
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -152,6 +152,7 @@ public class GuestHomeFragment extends Fragment {
                         PostsClass post = ds.getValue(PostsClass.class);
                         postsList.add(post);
                     }
+                    adapter.notifyDataSetChanged();
                 }
 
                 @Override
@@ -169,5 +170,22 @@ public class GuestHomeFragment extends Fragment {
     private void hideNoSubscriptionsMessage(){
         noSubscriptionsTextView.setVisibility((View.GONE));
         postsRV.setVisibility(View.VISIBLE);
+    }
+    private String getPostAuthorName(String authorID){
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users").child(authorID);
+        final String[] authorName = new String[1];
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    authorName[0] = snapshot.child("name").getValue(String.class);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Home", "Не удалось загрузить имя пользователя " + error.getMessage());
+            }
+        });
+        return authorName[0];
     }
 }
