@@ -31,7 +31,6 @@ import com.example.networkingapp.MyAdapter;
 import com.example.networkingapp.PostsClass;
 import com.example.networkingapp.ProfileEditActivity;
 import com.example.networkingapp.R;
-import com.example.networkingapp.StartupDashboardActivity;
 import com.example.networkingapp.UploadPostActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,12 +44,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class ProfileFragment extends Fragment {
+public class MyProfileFragment extends Fragment {
 
     FirebaseAuth firebaseAuth;
     FirebaseUser user;
@@ -67,14 +64,14 @@ public class ProfileFragment extends Fragment {
     ValueEventListener eventListener;
 
 
-    public ProfileFragment() {
+    public MyProfileFragment() {
         // Required empty public constructor
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_profile, container, false);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -149,7 +146,7 @@ public class ProfileFragment extends Fragment {
                 for(DataSnapshot ds : snapshot.getChildren()){
                     PostsClass post = ds.getValue(PostsClass.class);
                     if(Objects.equals(post.getAuthorID(), user.getUid())){
-                        post.setAuthorName(snapshot.child("name").getValue(String.class));
+                        post.setAuthorName(nameTv.getText().toString());
                         postsList.add(post);
                     }
                 }
@@ -193,7 +190,36 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    private void showBottomDialog(){
+    public static String getUserName(String userId) {
+        final String[] userName = {null}; // Используем массив, чтобы хранить значение внутри анонимного класса
+
+        // Ссылка на узел "users" в вашей базе данных Firebase
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        Query userQuery = usersRef.orderByChild("id").equalTo(userId);
+        userQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        String name = "" + ds.child("name").getValue();
+                        userName[0] = name; // Сохраняем имя пользователя
+                    } else {
+                        userName[0] = null;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                userName[0] = null;
+                Log.e("Firebase Profile", "Error: " + databaseError.getMessage());
+            }
+        });
+
+        return userName[0];
+    }
+
+        private void showBottomDialog(){
 
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

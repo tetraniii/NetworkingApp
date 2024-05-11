@@ -51,6 +51,13 @@
         <item name="strokeWidth">2dp</item>
         <item name="android:textColor">@color/buttons</item>
     </style>
+
+    <style name="youSubscribedButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/lightPurple</item>
+        <item name="strokeColor">@color/lightPurple</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">@color/buttons</item>
+    </style>
     
     <style name="roundedImageViewRounded">
         <item name="cornerFamily">rounded</item>

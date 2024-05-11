@@ -54,5 +54,6 @@
     <string name="newPostsRu">Новые посты</string>
     <string name="followPostsRu">Ваши подписки</string>
     <string name="appName">BitLoom</string>
+    <string name="subscribeRu">Подписаться</string>
 
 </resources>

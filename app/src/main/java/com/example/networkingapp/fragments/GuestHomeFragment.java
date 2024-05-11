@@ -101,7 +101,9 @@ public class GuestHomeFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot ds : snapshot.getChildren()){
                         PostsClass post = ds.getValue(PostsClass.class);
-                        post.setAuthorName(getPostAuthorName(post.getAuthorID()));
+                        String userId = post.getAuthorID();
+                        String userName = getUserName(userId);
+                        post.setAuthorName(userName);
                         postsList.add(post);
                     }
                     postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
@@ -171,21 +173,35 @@ public class GuestHomeFragment extends Fragment {
         noSubscriptionsTextView.setVisibility((View.GONE));
         postsRV.setVisibility(View.VISIBLE);
     }
-    private String getPostAuthorName(String authorID){
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users").child(authorID);
-        final String[] authorName = new String[1];
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    public static String getUserName(String userId) {
+        final String[] userName = {null}; // Используем массив, чтобы хранить значение внутри анонимного класса
+
+        // Ссылка на узел "users" в вашей базе данных Firebase
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
+
+        // Запрос к базе данных Firebase для получения имени пользователя по его id
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    authorName[0] = snapshot.child("name").getValue(String.class);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Проверяем, существует ли пользователь с данным id
+                if (dataSnapshot.exists()) {
+                    // Получаем имя пользователя из снимка данных
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    userName[0] = name; // Сохраняем имя пользователя
+                } else {
+                    // Если пользователь с данным id не найден, можно выполнить соответствующие действия
+                    // Например, вернуть null или какое-то стандартное значение
+                    userName[0] = "Пользователь удален";
                 }
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase Home", "Не удалось загрузить имя пользователя " + error.getMessage());
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Обработка ошибки при чтении из базы данных Firebase
+                Log.e("Firebase Home", "Ошибка чтения имени пользователя: " + databaseError.getMessage());
             }
         });
-        return authorName[0];
+
+        return userName[0]; // Возвращаем имя пользователя
     }
 }

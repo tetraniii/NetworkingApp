@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import com.example.networkingapp.fragments.ProfileFragment;
+import com.example.networkingapp.fragments.MyProfileFragment;
 import com.example.networkingapp.fragments.SettingsFragment;
 import com.example.networkingapp.fragments.StartupHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -39,7 +39,7 @@ public class StartupDashboardActivity extends AppCompatActivity {
                         ft1.commit();
                         return true;
                 } else if (itemId == R.id.startup_nav_profile) {
-                        ProfileFragment fragment2 = new ProfileFragment();
+                        MyProfileFragment fragment2 = new MyProfileFragment();
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         FragmentTransaction ft2 = fragmentManager.beginTransaction();
                         ft2.replace(R.id.startupContent, fragment2, "");
@@ -55,4 +55,10 @@ public class StartupDashboardActivity extends AppCompatActivity {
                 }
                 return false;
             };
+    public void openMyProfileFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.startupContent, new MyProfileFragment())
+                .addToBackStack(null)
+                .commit();
+    }
 }
