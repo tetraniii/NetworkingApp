@@ -1,5 +1,6 @@
 package com.example.networkingapp.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,11 +13,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.networkingapp.MyAdapter;
-import com.example.networkingapp.PostsClass;
+import com.example.networkingapp.SearchActivity;
+import com.example.networkingapp.adapters.MyAdapter;
+import com.example.networkingapp.classes.PostsClass;
 import com.example.networkingapp.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,13 +41,14 @@ public class GuestHomeFragment extends Fragment {
     FirebaseDatabase database;
     DatabaseReference postsRef;
     DatabaseReference usersRef;
-    TextInputEditText editTextName;
+    TextInputEditText searchEditText;
     Button btnNewPosts, btnYourSub;
     RecyclerView postsRV;
     List<PostsClass> postsList;
     TextView noSubscriptionsTextView;
     MyAdapter adapter;
     ValueEventListener eventListener;
+    ImageButton searchBtn;
 
     public GuestHomeFragment() {
         // Required empty public constructor
@@ -60,7 +64,8 @@ public class GuestHomeFragment extends Fragment {
         postsRef = database.getReference("Posts");
         usersRef = database.getReference("Users");
 
-        editTextName = view.findViewById(R.id.editTextName);
+        searchEditText = view.findViewById(R.id.editTextName);
+        searchBtn = view.findViewById(R.id.searchBtn);
         btnNewPosts = view.findViewById(R.id.btnNewPosts);
         btnYourSub = view.findViewById(R.id.btnYourSub);
         noSubscriptionsTextView = view.findViewById(R.id.no_subscriptions_text_view);
@@ -71,98 +76,104 @@ public class GuestHomeFragment extends Fragment {
         adapter = new MyAdapter(getActivity(), postsList);
         postsRV.setAdapter(adapter);
 
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String searchQuery = searchEditText.getText().toString().trim();
+                if(!searchQuery.isEmpty()){
+                    Intent intent = new Intent(getActivity(), SearchActivity.class);
+                    intent.putExtra("searchQuery", searchQuery);
+                    startActivity(intent);
+                }
+            }
+        });
+
         btnNewPosts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadPosts(true);
+                loadPosts();
             }
         });
         btnYourSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadPosts(false);
+                DatabaseReference subscriptionsRef = usersRef.child(user.getUid()).child("subscriptions");
+                subscriptionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<String> subscriptions = new ArrayList<>();
+                        for(DataSnapshot ds : snapshot.getChildren()){
+                            String subscriptionsID = ds.getValue(String.class);
+                            subscriptions.add(subscriptionsID);
+                        }
+                        loadSubscriptionsPosts(subscriptions);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("Firebase Home", "Error: " + error.getMessage());
+                    }
+                });
             }
         });
 
         // По умолчанию показываем все посты
-        loadPosts(true);
+        loadPosts();
 
         return view;
     }
-
-    private void loadPosts(boolean showAllPosts){
+    private void loadSubscriptionsPosts(List<String> subscriptions){
         hideNoSubscriptionsMessage();
         adapter.clear();
-        if(showAllPosts){
-            //Загружаем все посты
-            Query query = FirebaseDatabase.getInstance().getReference("Posts").limitToFirst(100); // Пример: загрузить 100 последних постов
-            eventListener = query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds : snapshot.getChildren()){
+        DatabaseReference postsRef = FirebaseDatabase.getInstance().getReference("Posts");
+        postsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(subscriptions.isEmpty()){
+                    // Если список подписок не существует или пуст, показываем сообщение об отсутствии подписок
+                    showNoSubscriptionsMessage();
+                }else {
+                    for (DataSnapshot ds : snapshot.getChildren()) {
                         PostsClass post = ds.getValue(PostsClass.class);
-                        String userId = post.getAuthorID();
-                        String userName = getUserName(userId);
-                        post.setAuthorName(userName);
-                        postsList.add(post);
+                        if (subscriptions.contains(post.getAuthorID())) {
+                            postsList.add(post);
+                        }
                     }
                     postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
                     adapter.notifyDataSetChanged();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("Firebase Home", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
-                    Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else{
-            // Загружаем посты подписок текущего пользователя
-            Query query = usersRef.child(user.getUid()).child("subscriptions");
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if(!snapshot.exists()){
-                        // Если список подписок не существует или пуст, показываем сообщение об отсутствии подписок
-                        showNoSubscriptionsMessage();
-                    }else{
-                        // Если список подписок существует, загружаем посты подписок текущего пользователя
-                        List<String> subscriptions = new ArrayList<>();
-                        for(DataSnapshot ds : snapshot.getChildren()){
-                            subscriptions.add(ds.getKey());
-                        }
-                        loadPostsForSubscriptions(subscriptions);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Home", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
+                Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void loadPostsForSubscriptions(final List<String> subscriptions){
+    private void loadPosts() {
+        hideNoSubscriptionsMessage();
         adapter.clear();
-        for(final String userID : subscriptions){
-            Query query = FirebaseDatabase.getInstance().getReference("Posts").orderByChild("authorID").equalTo(userID);
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for(DataSnapshot ds : snapshot.getChildren()){
-                        PostsClass post = ds.getValue(PostsClass.class);
-                        postsList.add(post);
-                    }
-                    adapter.notifyDataSetChanged();
+        //Загружаем все посты
+        Query query = FirebaseDatabase.getInstance().getReference("Posts").limitToFirst(100); // Пример: загрузить 100 последних постов
+        eventListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    PostsClass post = ds.getValue(PostsClass.class);
+                    postsList.add(post);
                 }
+                postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
+                adapter.notifyDataSetChanged();
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Home", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
+                Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showNoSubscriptionsMessage(){
@@ -172,36 +183,5 @@ public class GuestHomeFragment extends Fragment {
     private void hideNoSubscriptionsMessage(){
         noSubscriptionsTextView.setVisibility((View.GONE));
         postsRV.setVisibility(View.VISIBLE);
-    }
-    public static String getUserName(String userId) {
-        final String[] userName = {null}; // Используем массив, чтобы хранить значение внутри анонимного класса
-
-        // Ссылка на узел "users" в вашей базе данных Firebase
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
-
-        // Запрос к базе данных Firebase для получения имени пользователя по его id
-        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Проверяем, существует ли пользователь с данным id
-                if (dataSnapshot.exists()) {
-                    // Получаем имя пользователя из снимка данных
-                    String name = dataSnapshot.child("name").getValue(String.class);
-                    userName[0] = name; // Сохраняем имя пользователя
-                } else {
-                    // Если пользователь с данным id не найден, можно выполнить соответствующие действия
-                    // Например, вернуть null или какое-то стандартное значение
-                    userName[0] = "Пользователь удален";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Обработка ошибки при чтении из базы данных Firebase
-                Log.e("Firebase Home", "Ошибка чтения имени пользователя: " + databaseError.getMessage());
-            }
-        });
-
-        return userName[0]; // Возвращаем имя пользователя
     }
 }

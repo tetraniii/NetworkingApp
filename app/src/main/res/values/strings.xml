@@ -55,5 +55,8 @@
     <string name="followPostsRu">Ваши подписки</string>
     <string name="appName">BitLoom</string>
     <string name="subscribeRu">Подписаться</string>
+    <string name="youSubscribedRu">Вы подписаны</string>
+    <string name="unsubRu">Отписаться</string>
+    <string name="listIsEmptyRu">Список пуст</string>
 
 </resources>

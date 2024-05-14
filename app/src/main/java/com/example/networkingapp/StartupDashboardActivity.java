@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.example.networkingapp.fragments.MyProfileFragment;
@@ -25,6 +29,9 @@ public class StartupDashboardActivity extends AppCompatActivity {
 
         if(savedInstanceState==null){
             bottomNav.setSelectedItemId(R.id.startup_nav_home);
+        }
+        if(getIntent().getBooleanExtra("openMyProfileFragment", false)){
+            openMyProfileFragment();
         }
     }
     private final NavigationBarView.OnItemSelectedListener navListener =

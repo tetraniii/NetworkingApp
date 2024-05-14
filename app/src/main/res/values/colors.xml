@@ -9,4 +9,5 @@
     <color name="lightPurple">#d2b7ff</color>
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#9d58f3</color>
     <color name="lightBlue">#FF65DCF1</color>
+    <color name="transparent">#00000000</color>
 </resources>

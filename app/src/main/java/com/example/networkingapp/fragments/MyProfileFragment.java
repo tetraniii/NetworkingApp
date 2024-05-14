@@ -27,8 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.networkingapp.MyAdapter;
-import com.example.networkingapp.PostsClass;
+import com.example.networkingapp.adapters.MyAdapter;
+import com.example.networkingapp.classes.PostsClass;
 import com.example.networkingapp.ProfileEditActivity;
 import com.example.networkingapp.R;
 import com.example.networkingapp.UploadPostActivity;

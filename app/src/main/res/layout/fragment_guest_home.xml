@@ -12,22 +12,41 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/searchTIL"
+        <LinearLayout
+            android:id="@+id/searchLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/searchRu"
-            android:textSize="15sp"
-            android:paddingTop="10dp"
-            android:theme="@style/textInputLayoutDataChange"
-            style="@style/textInputLayoutDataChange">
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextName"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchTIL"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:hint="@string/searchRu"
+                android:textSize="15sp"
+                android:theme="@style/textInputLayoutDataChange"
+                style="@style/textInputLayoutDataChange"
+                android:layout_weight="1">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/searchBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_button_search"
+                android:layout_weight="0"
+                android:background="@color/transparent"
+                android:paddingStart="10dp"/>
+
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -35,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_below="@+id/searchTIL">
+            android:layout_below="@+id/searchLayout">
             <Button
                 style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/btnNewPosts"

@@ -1,4 +1,4 @@
-package com.example.networkingapp;
+package com.example.networkingapp.classes;
 
 public class PostsClass {
     private String postText;

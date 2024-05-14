@@ -23,7 +23,7 @@
             android:id="@+id/postAuthor"
             android:textSize="17sp"
             android:maxLines="1"
-            />
+            android:textStyle="bold"/>
 
         <TextView
             android:layout_width="match_parent"

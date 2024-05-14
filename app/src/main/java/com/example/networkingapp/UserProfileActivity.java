@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.networkingapp.adapters.MyAdapter;
+import com.example.networkingapp.classes.PostsClass;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -61,6 +63,8 @@ public class UserProfileActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         userRef = database.getReference("Users");
         postsRef = database.getReference("Posts");
+
+        checkSubscription(userID);
 
         Query userQuery = userRef.orderByChild("id").equalTo(userID);
         userQuery.addValueEventListener(new ValueEventListener() {
@@ -144,11 +148,12 @@ public class UserProfileActivity extends AppCompatActivity {
         btnSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkAndAddSubscription(userID);
+                addOrRemoveSubscription(userID);
+                checkSubscription(userID);
             }
         });
     }
-    private void checkAndAddSubscription(String userId){
+    private void addOrRemoveSubscription(String userId){
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser.getUid());
         usersRef.child("subscriptions").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -158,13 +163,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     List<String> subscriptions = new ArrayList<>();
                     subscriptions.add(userId);
                     usersRef.child("subscriptions").setValue(subscriptions);
+                    btnSub.setText("Вы подписаны");
                 }else{
                     List<String> subscriptions = (List<String>) snapshot.getValue();
                     if(!subscriptions.contains(userId)){
                         subscriptions.add(userId);
                         usersRef.child("subscriptions").setValue(subscriptions);
                     }else{
-                        Toast.makeText(UserProfileActivity.this, "Вы уже подписаны на пользователя", Toast.LENGTH_SHORT).show();
+                        subscriptions.remove(userId);
+                        usersRef.child("subscriptions").setValue(subscriptions);
                     }
                 }
             }
@@ -175,4 +182,33 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     }
+    private void checkSubscription(String userId){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser.getUid());
+        final Boolean userIsSubscribed = false;
+        usersRef.child("subscriptions").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                try{
+                    if(snapshot.exists()){
+                        List<String> subscriptions = (List<String>) snapshot.getValue();
+                        if(subscriptions.contains(userId)){
+                            btnSub.setText("Вы подписаны");
+                        }else
+                            btnSub.setText("Подписаться");
+                    }else
+                        btnSub.setText("Подписаться");
+                }catch (Exception e){
+                    Log.e("Firebase User Profile", "Error: " + e.getMessage());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase User Profile", "Error: " + error.getMessage());
+            }
+        });
+    }
+
 }

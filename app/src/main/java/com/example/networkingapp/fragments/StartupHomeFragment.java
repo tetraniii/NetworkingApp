@@ -1,66 +1,96 @@
 package com.example.networkingapp.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.networkingapp.R;
+import com.example.networkingapp.SearchActivity;
+import com.example.networkingapp.adapters.MyAdapter;
+import com.example.networkingapp.classes.PostsClass;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link StartupHomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class StartupHomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    TextInputEditText searchEditText;
+    RecyclerView postsRV;
+    ImageButton searchBtn;
+    List<PostsClass> postsList;
+    MyAdapter adapter;
+    ValueEventListener eventListener;
 
     public StartupHomeFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment StartupHomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static StartupHomeFragment newInstance(String param1, String param2) {
-        StartupHomeFragment fragment = new StartupHomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_startup_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_startup_home, container, false);
+
+        searchEditText = view.findViewById(R.id.searchEditText);
+        postsRV = view.findViewById(R.id.postsRV);
+        searchBtn = view.findViewById(R.id.searchBtn);
+
+        postsRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        postsList = new ArrayList<>();
+        adapter = new MyAdapter(getActivity(), postsList);
+        postsRV.setAdapter(adapter);
+
+        loadPosts();
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String searchQuery = searchEditText.getText().toString().trim();
+                if(!searchQuery.isEmpty()){
+                    Intent intent = new Intent(getActivity(), SearchActivity.class);
+                    intent.putExtra("searchQuery", searchQuery);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        return view;
+    }
+    private void loadPosts(){
+        adapter.clear();
+        Query query = FirebaseDatabase.getInstance().getReference("Posts").limitToFirst(100);
+        eventListener = query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    PostsClass post = ds.getValue(PostsClass.class);
+                    postsList.add(post);
+                }
+                postsList.sort((p1, p2) -> Long.compare((Long) p2.getTimestamp(), (Long) p1.getTimestamp()));
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Home", "Не удалось загрузить данные о постах, ошибка: " + error.getMessage());
+                Toast.makeText(getActivity(), "Не удалось загрузить данные", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

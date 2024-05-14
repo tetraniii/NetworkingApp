@@ -1,9 +1,7 @@
-package com.example.networkingapp;
+package com.example.networkingapp.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +15,16 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.networkingapp.fragments.MyProfileFragment;
+import com.example.networkingapp.classes.PostsClass;
+import com.example.networkingapp.R;
+import com.example.networkingapp.StartupDashboardActivity;
+import com.example.networkingapp.UserProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +37,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     private Context context;
     private List<PostsClass> postsList;
-    FirebaseDatabase database;
     public MyAdapter(Context context, List<PostsClass> postsList) {
         this.context = context;
         this.postsList = postsList;
@@ -57,7 +56,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         Glide.with(context).load(postsList.get(position).getPostImage()).into(holder.recImage);
         holder.recText.setText(postsList.get(position).getPostText());
-        holder.recAuthor.setText(postsList.get(position).getAuthorName());
+        setAuthorNameAdapter(postsList.get(position).getAuthorID(), holder.recAuthor);
         int pos = holder.getAdapterPosition();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -100,6 +99,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     public void clear(){
         postsList.clear();
         notifyDataSetChanged(); // Сообщаем RecyclerView, что данные были изменены
+    }
+
+    private void setAuthorNameAdapter(String userID, TextView authorTextView){
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users").child(userID);
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String name = snapshot.child("name").getValue(String.class);
+                    if(name!=null){
+                        authorTextView.setText(name);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Posts Adapter", "Error: " + error.getMessage());
+                Toast.makeText(context.getApplicationContext(), "Не удалось загрузить данные", Toast.LENGTH_SHORT);
+            }
+        });
     }
 }
 
